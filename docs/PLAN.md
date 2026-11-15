@@ -261,16 +261,32 @@ Dazu: kleine Animation (Funken in Aktfarbe) beim neuen Badge, Tages-Serie und Fo
 | **M3** ✅ | Sprachausgabe mit Frauen-/Männerstimmen, Stimmen-Einstellungen, Hörprobe | Stichworte hören, Stimmen pro Figur |
 | **M4** ✅ | Ablauf-Ansicht, «Mein Weg», Quiz | Ablauf lernen |
 | **M5** ✅ | Badges, Startbildschirm, PWA/offline, Countdown Textfest/Premiere, Feinschliff | Fertige App fürs Ensemble |
-| **M6** | **KI-Stimmen mit ElevenLabs**: natürliche Stimme pro Figur, vorab erzeugt, verschlüsselt ausgeliefert | Hörprobe und Stichworte mit natürlichen Stimmen |
+| **M6** | **Natürliche KI-Stimmen** (Pilot: Chatterbox lokal & gratis; Alternativen Piper, Azure, ElevenLabs): natürliche Stimme pro Figur, vorab erzeugt, verschlüsselt ausgeliefert | Hörprobe und Stichworte mit natürlichen Stimmen |
 | *M7 (später)* | *Echte Sprachaufnahmen* | *siehe unten* |
 
 Nach jedem Meilenstein auf dem iPhone testen und Rückmeldung einholen, bevor es weitergeht. Nach M5 zuerst mit 2–3 Mitspielenden testen, dann ans ganze Ensemble.
 
-### M6 – KI-Stimmen mit ElevenLabs (neu, 15.11.2026)
+### M6 – Natürliche KI-Stimmen (lokal mit Chatterbox/Piper oder Cloud: Azure, ElevenLabs) (neu, 15.11.2026)
 
 **Machbar: ja.** ElevenLabs erzeugt aus Text sehr natürliche Sprache (Modelle «Multilingual v2», «v3»/«v4» mit Ausdruck wie Lachen oder Flüstern). Statt der holprigen Gerätestimme hört man dann für jede Figur eine eigene, natürliche Stimme – im Lernmodus beim Stichwort und in der Hörprobe.
 
 **Grundsatz:** Die Audiodateien werden **einmal am Computer erzeugt** (Werkzeug `tools/elevenlabs.mjs`), nicht in der App. Der API-Schlüssel bleibt lokal (Umgebungsvariable, nie im Repo, nie im Browser). Die Dateien werden wie der Text **verschlüsselt** und mit der App ausgeliefert.
+
+**Varianten (ergänzt 15.11.2026) – Reihenfolge für den Pilot**
+
+| | Variante | Kosten | Text verlässt den Computer? | Stimme klonen (Mundart) | Einschätzung |
+|---|---|---|---|---|---|
+| **A** | **Chatterbox Multilingual** (Resemble AI), lokal | gratis (MIT-Lizenz) | **nein** | ja, aus wenigen Minuten Aufnahme | Klingt nahe an ElevenLabs, Deutsch unterstützt. Am besten mit Grafikkarte (sonst langsam). Unhörbares Wasserzeichen im Audio. **Erste Wahl für den Pilot.** |
+| **B** | **Piper** mit «Thorsten»-Stimmen, lokal | gratis (Motor MIT, Thorsten-Daten CC0) | **nein** | nein | Sehr schnell, auch ohne Grafikkarte. Qualität mittel (etwa wie eine gute Systemstimme), wenige deutsche Stimmen. Rückfallebene. |
+| **C** | **Microsoft Azure Speech** (Cloud) | gratis bis 500 000 Zeichen/Monat (Neural-Stimmen) – das Stück passt mehrfach hinein | ja → Einverständnis nötig | nicht im Gratisangebot | Stimmen mit Schweizer Färbung (Leni, Jan, de-CH); ob genau diese im Gratiskontingent sind, vorher prüfen. |
+| **D** | **ElevenLabs** (Cloud) | ca. 85 000 Credits pro Durchlauf (bezahltes Abo; Gratis nur 10 000 Zeichen/Monat, nicht kommerziell) | ja → Einverständnis nötig | ja (bezahlt) | Sehr natürlich, aber kostet und Text geht an den Anbieter. Nur wenn A–C nicht genügen. |
+| – | ~~XTTS-v2 (Coqui)~~ | gratis | nein | ja | Nicht verwenden: nur nicht-kommerzielle Lizenz, Firma existiert nicht mehr. |
+
+- **Dialekt:** Keine Variante kann Luzerner Dialekt von sich aus. Am nächsten kommt **Stimmen-Klonen (A oder D)**: eine Person aus dem Ensemble spricht ein paar Minuten Mundart, das Modell übernimmt Klang und Färbung – nur mit **schriftlichem Einverständnis** dieser Person.
+- **Vorteil lokal (A, B):** Der unveröffentlichte Stücktext bleibt auf dem eigenen Computer; das Einverständnis von Autorin/Verein für einen externen Dienst entfällt (für das Klonen braucht es weiterhin die Zustimmung der Sprecherin/des Sprechers).
+- **Pilot:** 1 Szene (z.B. 2.11) mit **A**: eine geklonte Mundart-Stimme + 2–3 Standardstimmen, Hörtest mit 2–3 Mitspielenden. Genügt es nicht → Vergleich mit **C**, erst dann **D**.
+- Die App-Seite von M6 ist für alle Varianten gleich (MP3 pro Replik, verschlüsselt, Zeitmarken für den letzten Satz, Fallback auf Gerätestimme). Nur das Erzeugungs-Werkzeug unterscheidet sich: `tools/tts-erzeugen.mjs` (bzw. Python für A/B) mit Motor-Option `--motor chatterbox|piper|azure|elevenlabs`. Zeitmarken: bei A/B über eine nachträgliche Ausrichtung (forced alignment) oder einfach pro Satz ein eigenes Stück erzeugen.
+- Lizenzen und Gratiskontingente vor dem Start nochmals prüfen (Stand der Recherche: November 2026).
 
 **Umfang und Kosten (Schätzung)**
 - 890 Repliken, rund **85 000 Zeichen** ≈ **100 Minuten** Audio für das ganze Stück.
@@ -299,7 +315,7 @@ Nach jedem Meilenstein auf dem iPhone testen und Rückmeldung einholen, bevor es
 - Kommerzielle Nutzung erst ab bezahltem Plan; Voice Cloning nur mit schriftlicher Zustimmung der geklonten Person.
 
 **Schritte**
-1. Einverständnis, Konto und Budget klären.
+1. Variante wählen (Pilot mit A = Chatterbox lokal); bei Cloud-Varianten Einverständnis, Konto und Budget klären; beim Klonen Einverständnis der Sprecherin/des Sprechers.
 2. Pilot mit 1 Szene, Stimmen auswählen, Hörtest.
 3. `tools/elevenlabs.mjs`: erzeugen mit Cache nach Hash, Zeitmarken speichern, Kostenvorschau vor dem Lauf («x Zeichen, y Credits»).
 4. `tools/encrypt-audio.mjs`: pro Szene verschlüsseln → `public/audio/*.enc`.

@@ -253,7 +253,7 @@ Tests verwenden nur erfundene Figuren und Sätze (`test/fixtures/demo.mjs`), nie
 Aktuelle Version: siehe Fusszeile der App und [CHANGELOG.md](CHANGELOG.md) (SemVer).
 | M4 | Ablauf-Ansicht, «Mein Weg», Ablauf-Quiz | ✅ |
 | M5 | Badges, Offline-App (PWA), Feinschliff | ✅ |
-| M6 | Natürliche KI-Stimmen mit ElevenLabs (vorab erzeugt, verschlüsselt) | geplant |
+| M6 | Natürliche KI-Stimmen (Pilot: Chatterbox lokal & gratis; Alternativen Piper, Azure, ElevenLabs) | geplant |
 | M7 | Echte Sprachaufnahmen | später |
 
 ## Lizenz
