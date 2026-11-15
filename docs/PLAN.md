@@ -261,11 +261,54 @@ Dazu: kleine Animation (Funken in Aktfarbe) beim neuen Badge, Tages-Serie und Fo
 | **M3** ✅ | Sprachausgabe mit Frauen-/Männerstimmen, Stimmen-Einstellungen, Hörprobe | Stichworte hören, Stimmen pro Figur |
 | **M4** | Ablauf-Ansicht, «Mein Weg», Quiz | Ablauf lernen |
 | **M5** | Badges, Startbildschirm, PWA/offline, Countdown Textfest/Premiere, Feinschliff | Fertige App fürs Ensemble |
-| *M6 (später)* | *Echte Sprachaufnahmen* | *siehe unten* |
+| **M6** | **KI-Stimmen mit ElevenLabs**: natürliche Stimme pro Figur, vorab erzeugt, verschlüsselt ausgeliefert | Hörprobe und Stichworte mit natürlichen Stimmen |
+| *M7 (später)* | *Echte Sprachaufnahmen* | *siehe unten* |
 
 Nach jedem Meilenstein auf dem iPhone testen und Rückmeldung einholen, bevor es weitergeht. Nach M5 zuerst mit 2–3 Mitspielenden testen, dann ans ganze Ensemble.
 
-### Später: echte Sprachaufnahmen (M6, optional)
+### M6 – KI-Stimmen mit ElevenLabs (neu, 15.11.2026)
+
+**Machbar: ja.** ElevenLabs erzeugt aus Text sehr natürliche Sprache (Modelle «Multilingual v2», «v3»/«v4» mit Ausdruck wie Lachen oder Flüstern). Statt der holprigen Gerätestimme hört man dann für jede Figur eine eigene, natürliche Stimme – im Lernmodus beim Stichwort und in der Hörprobe.
+
+**Grundsatz:** Die Audiodateien werden **einmal am Computer erzeugt** (Werkzeug `tools/elevenlabs.mjs`), nicht in der App. Der API-Schlüssel bleibt lokal (Umgebungsvariable, nie im Repo, nie im Browser). Die Dateien werden wie der Text **verschlüsselt** und mit der App ausgeliefert.
+
+**Umfang und Kosten (Schätzung)**
+- 890 Repliken, rund **85 000 Zeichen** ≈ **100 Minuten** Audio für das ganze Stück.
+- Abrechnung in Credits: Multilingual v2 = 1 Credit pro Zeichen, Flash/Turbo = 0,5. Eine komplette Generierung braucht also ca. **85 000 Credits** (Grössenordnung ein Monat «Creator»-Abo), plus Reserve für Neuversuche.
+- Bei Textänderungen werden nur Repliken mit geändertem Hash neu erzeugt (Cache nach Replik-ID + Hash).
+- Preise und Pläne vor dem Start auf elevenlabs.io/pricing prüfen – Drittquellen widersprechen sich.
+
+**Dialekt**
+- ElevenLabs hat keine ausgewiesene Stimme für Luzerner Dialekt. Eine deutsche Stimme liest Mundart deutlich besser als die iPhone-Stimme, aber nicht wie ein Einheimischer.
+- Darum zuerst ein **Pilot**: 1 Szene (z.B. 2.11), 3–4 Stimmen, Hörtest mit 2–3 Mitspielenden.
+- Option **Voice Cloning**: Eine Mundart sprechende Person (z.B. aus dem Ensemble, mit schriftlichem Einverständnis) liefert ein paar Minuten Aufnahme → daraus eine Stimme mit echter Färbung. Sprecherwechsel pro Figur über Tonlage/Stil.
+
+**Stimmen pro Figur**
+- Pro Figur eine Stimme aus der ElevenLabs-Bibliothek passend zu Geschlecht und Alter (Joe, Jakob, Heinrich, Franziskus, Valentin klar unterscheidbar; Jugendliche/Kind jünger).
+- Zuordnung in `data/private/elevenlabs.json` (Figur → Voice-ID, Modell, Stabilität/Stil).
+- Regieanweisungen werden nicht gesprochen, können aber den Ausdruck steuern (z.B. «lacht» → Audio-Tag `[laughs]` bei v3/v4).
+
+**Technik**
+- Pro Replik eine MP3 (mono, 64 kbit/s) ≈ 0,5 MB/Minute → ca. **50 MB** fürs ganze Stück.
+- Mit Zeitmarken («with timestamps») erzeugen: so kann die App beim Stichwort nur den **letzten Satz** abspielen.
+- Pro Szene eine verschlüsselte Datei `public/audio/<szene>.enc` (AES-GCM, gleicher Schlüssel wie der Text), wird erst beim Öffnen der Szene geladen.
+- App: Gibt es eine Aufnahme mit passender Replik-ID **und** passendem Hash, wird sie gespielt, sonst wie bisher die Gerätestimme. Einstellung «Stimmen: Natürlich (ElevenLabs) / Gerät». Offline-Speicher optional pro Szene.
+
+**Rechte und Datenschutz**
+- Der unveröffentlichte Stücktext geht dafür an einen externen Dienst → **Einverständnis von Autorin und Verein** nötig. Nutzungsbedingungen zur Datenverwendung prüfen.
+- Kommerzielle Nutzung erst ab bezahltem Plan; Voice Cloning nur mit schriftlicher Zustimmung der geklonten Person.
+
+**Schritte**
+1. Einverständnis, Konto und Budget klären.
+2. Pilot mit 1 Szene, Stimmen auswählen, Hörtest.
+3. `tools/elevenlabs.mjs`: erzeugen mit Cache nach Hash, Zeitmarken speichern, Kostenvorschau vor dem Lauf («x Zeichen, y Credits»).
+4. `tools/encrypt-audio.mjs`: pro Szene verschlüsseln → `public/audio/*.enc`.
+5. App: Abspielen mit Fallback, Einstellung, Laden bei Bedarf; Tests mit erfundenen Audiodaten.
+6. README: Audio aktualisieren nach Textänderung.
+
+**Ergebnis zum Testen:** Hörprobe und Stichworte mit natürlichen Stimmen für alle Figuren.
+
+### Später: echte Sprachaufnahmen (M7, optional)
 
 Wenn die holprige Sprachausgabe stört, können die Stichworte im echten Dialekt aufgenommen werden. Das Datenmodell ist vorbereitet: Jede Replik hat eine feste `id`, über die eine Aufnahme zugeordnet wird. Varianten:
 - **Persönlich:** Jede Person nimmt Stichworte auf ihrem iPhone selbst auf (MediaRecorder, Speicherung in IndexedDB). Einfach, aber jede Person muss es selbst tun.

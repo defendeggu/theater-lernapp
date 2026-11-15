@@ -231,8 +231,12 @@ Tests verwenden nur erfundene Figuren und Sätze (`test/fixtures/demo.mjs`), nie
 | M2 | Lernkartei mit Phasen, Modi, Hilfestufen, Statistik, Sicherung | ✅ |
 | M3 | Sprachausgabe mit Frauen-/Männerstimmen, Hörprobe | ✅ |
 | – | App-Icon, Manifest (Android installierbar) | ✅ |
+
+Aktuelle Version: siehe Fusszeile der App und [CHANGELOG.md](CHANGELOG.md) (SemVer).
 | M4 | Ablauf-Ansicht, «Mein Weg», Ablauf-Quiz | offen |
 | M5 | Badges, Offline-App (PWA), Feinschliff | offen |
+| M6 | Natürliche KI-Stimmen mit ElevenLabs (vorab erzeugt, verschlüsselt) | geplant |
+| M7 | Echte Sprachaufnahmen | später |
 
 ## Lizenz
 

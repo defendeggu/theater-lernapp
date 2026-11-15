@@ -101,6 +101,12 @@ Python-Abhängigkeiten nur für die Werkzeuge: `pip install pdfplumber pytest`.
 - Sammelsprecher (`A/B`, Beide, Alle, Kinder, Gruppe) werden aufgelöst und markiert;
   Korrekturen von Hand in `data/private/korrekturen.json`.
 
+## Versionen
+
+- SemVer, Quelle der Wahrheit: `public/js/version.js` (sichtbar in der Fusszeile). Zu jeder neuen Version
+  einen Eintrag oben in `CHANGELOG.md` (Test prüft das) und ein Git-Tag `vX.Y.Z` setzen und pushen.
+- MINOR = Meilenstein/neue Funktion, PATCH = Fehlerbehebung/neue Textdaten, 1.0.0 = Freigabe fürs Ensemble (nach M5).
+
 ## Git
 
 - Autor in diesem Repo: `Adrian S. <48011232+defendeggu@users.noreply.github.com>` (lokale Config).

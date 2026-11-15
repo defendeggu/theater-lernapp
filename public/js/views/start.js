@@ -2,6 +2,7 @@ import { h, leeren, kontrastFarbe } from "../dom.js";
 import { kartenFuer } from "../cards.js";
 import { szenenDerRolle } from "../roles.js";
 import { lsGet } from "../store.js";
+import { VERSION } from "../version.js";
 import { fortschrittFuer, rolleLaden } from "../store.js";
 import { faelligeKarten, schwacheKarten, statistik, anteilSitzt, phase, serie, tagKey } from "../leitner.js";
 
@@ -77,5 +78,8 @@ export async function zeigeStart(root, app) {
       h("div.szenen", a.szenen.map((s) => h("a.szene-chip", {
         href: `#/lernen?ab=${s.id}`, style: { "--akt": a.farbe }, "aria-label": `Szene ${s.id}, ${s.ort}`,
       }, h("b", s.id), h("span", s.ort)))))),
+    h("footer.fusszeile",
+      h("a", { href: "#/einstellungen" }, `Version ${VERSION}`),
+      ` · Textstand ${new Date(app.stueck.stand).toLocaleDateString("de-CH")}`),
   ));
 }

@@ -2,6 +2,7 @@ import { h, leeren } from "../dom.js";
 import { lsGet, lsSet, exportieren, importieren, rolleZuruecksetzen } from "../store.js";
 import { STANDARD_TERMINE, phase, tagKey } from "../leitner.js";
 import { rollenListe } from "../roles.js";
+import { VERSION } from "../version.js";
 
 function auswahl(name, titel, optionen, wert, onchange) {
   return h("fieldset.auswahl", h("legend", titel),
@@ -140,6 +141,7 @@ export function zeigeEinstellungen(root, app) {
         },
       }, `Lernstand von ${f.kurz} löschen`)),
 
-    h("p.klein.stand", `Datenstand: ${new Date(app.stueck.stand).toLocaleDateString("de-CH")}`),
+    h("p.klein.stand", `Version ${VERSION} · Textstand ${new Date(app.stueck.stand).toLocaleDateString("de-CH")} · `,
+      h("a", { href: "https://github.com/defendeggu/theater-lernapp/blob/main/CHANGELOG.md", target: "_blank", rel: "noopener" }, "Was ist neu?")),
   ));
 }

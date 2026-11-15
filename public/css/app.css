@@ -218,6 +218,9 @@ button { font: inherit; color: inherit; }
   .rein-rechts, .rein-links, .spinner { animation: none; }
 }
 
+.fusszeile { margin-top: 32px; padding-top: 12px; border-top: 1px solid var(--linie); text-align: center; font-size: .78em; color: var(--text-2); }
+.fusszeile a { color: inherit; }
+
 /* --- M2: Hilfestufen --- */
 .hilfe-wahl { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin: -4px 0 12px; padding: 3px; border-radius: 12px; background: var(--flaeche-2); }
 .hilfe-knopf { border: 0; background: none; padding: 8px 2px; border-radius: 9px; font-size: .8em; font-weight: 600; color: var(--text-2); cursor: pointer; min-height: 36px; }
