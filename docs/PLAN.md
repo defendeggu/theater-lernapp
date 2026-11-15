@@ -2,7 +2,8 @@
 
 Eine Lern-App fürs iPhone, mit der die Spielerinnen und Spieler der Eibeler Volksbühne (EVB) ihren Text für «S'Füür vom Schmied» (Volksstück in 3 Akten, Luzerner Dialekt) auswendig lernen. Jede Person wählt ihre **Rolle** und lernt deren Repliken. Gebaut wird die App mit Claude Code im Repo **`theater-lernapp`**, gehostet auf GitHub Pages.
 
-- **Premiere:** Ende April 2028 (genaues Datum in der App einstellbar)
+- **Textfest:** Anfang Dezember 2027 – ab dann ohne Textbuch an die wöchentliche Probe (Vorgabe der Regie)
+- **Premiere:** Ende April 2028 (beide Daten in der App einstellbar)
 - **Grundlage:** Textbuch-PDF (123 Seiten), lokal unter `input/textbuch.pdf` (nie committen)
 - **Erste Nutzerin:** Darstellerin der Alina. Ihre Notizen sind die Ausgangslage.
 
@@ -197,12 +198,13 @@ Stichwort wird vorgelesen → Pause (Länge passt sich an die Länge der eigenen
 
 **Bewertung (Ampel):** Nach dem Umdrehen der Karte drei Knöpfe – 🔴 «Nöd gwüsst» (zurück in Fach 1), 🟡 «Fast» (Fach bleibt), 🟢 «Sass» (Fach +1). Farbe immer zusammen mit Text (Farbschwäche). Intervalle: Fach 1 = gleiche Sitzung, 2 = 1 Tag, 3 = 3 Tage, 4 = 7 Tage, 5 = 14 Tage.
 
-**Premiere Ende April 2028:** Die Lernzeit ist lang (rund 17 Monate). Darum drei Phasen, gesteuert über das Premieren-Datum in den Einstellungen (Standard 30.04.2028, anpassbar):
-- **Kennenlernen** (bis 6 Monate vor der Premiere): normale Intervalle, Fokus auf Ablauf und chronologisches Lesen
-- **Festigen** (6 bis 2 Monate vorher): normale Intervalle, Fokus auf Fällig und Hilfestufe «Anfangsbuchstaben»
-- **Endspurt** (letzte 8 Wochen): Intervalle höchstens 3 Tage, damit alles frisch bleibt; Hinweis auf Hörprobe ganzer Szenen
+**Zwei Termine:** Die Regie verlangt, dass alle ihren Text **Anfang Dezember 2027 auswendig** können und ab dann ohne Textbuch an die wöchentliche Probe kommen («Textfest»). Die **Premiere** ist Ende April 2028. Massgebend fürs Lernen ist das Textfest-Datum. Beide Daten sind in den Einstellungen anpassbar (Standard: Textfest 01.12.2027, Premiere 30.04.2028). Die Phasen richten sich nach dem Textfest:
+- **Kennenlernen** (bis 6 Monate vor dem Textfest, also bis ca. Juni 2027): normale Intervalle, Fokus auf Ablauf und chronologisches Lesen
+- **Festigen** (6 bis 2 Monate vor dem Textfest): normale Intervalle, Fokus auf Fällig und Hilfestufe «Anfangsbuchstaben»
+- **Endspurt** (letzte 8 Wochen vor dem Textfest, ab ca. Oktober 2027): Intervalle höchstens 3 Tage, damit alles frisch bleibt; Hinweis auf Hörprobe ganzer Szenen
+- **Halten** (vom Textfest bis zur Premiere): Text sitzt und wird wach gehalten; Intervalle höchstens 7 Tage, Fokus auf Hörprobe ganzer Szenen und schwache Karten
 
-Der Startbildschirm zeigt den Countdown und die aktuelle Phase.
+Der Startbildschirm zeigt den Countdown bis zum Textfest (danach bis zur Premiere) und die aktuelle Phase.
 
 ### Ablauf und Ablauf-Quiz
 
@@ -226,7 +228,7 @@ Badges werden pro Rolle lokal gespeichert, mit Datum. Eine Sammelvitrine zeigt e
 | Vorhang auf | erste Karte gelernt |
 | Szene sitzt | erste Szene komplett in Fach ≥ 3 |
 | Akt 1 / Akt 2 / Akt 3 sitzt | alle Karten eines Akts in Fach ≥ 4 |
-| Premierenreif | alle Karten in Fach 5 |
+| Textfest | alle Karten in Fach 5 |
 | Füürfescht | 7 Tage Serie |
 | Dauerbrenner | 30 Tage Serie |
 | Schmiedeeisern | 100 Tage Serie |
@@ -242,7 +244,7 @@ Dazu: kleine Animation (Funken in Aktfarbe) beim neuen Badge, Tages-Serie und Fo
 
 ## 8. Oberfläche (iPhone zuerst)
 
-- **Start:** «Du spielst: Alina», Countdown zur Premiere mit Phase, drei Fortschrittsringe (Akt 1–3), Knopf «Heute lernen (23 fällig)», Kacheln für die Modi, Serie, neuestes Badge.
+- **Start:** «Du spielst: Alina», Countdown zum Textfest (danach zur Premiere) mit Phase, drei Fortschrittsringe (Akt 1–3), Knopf «Heute lernen (23 fällig)», Kacheln für die Modi, Serie, neuestes Badge.
 - **Karte:** oben Akt-Farbband mit «Akt 2 · Szene 2.11 · Lager»; Vorderseite = Stichwort mit Sprecher und Knopf ▶︎ (vorlesen). Nachdem man das Stichwort gelesen oder gehört und den eigenen Text gesprochen hat, wird die Karte **von Hand umgedreht** (grosser Knopf «Umdrehen» oder Tippen auf die Karte, mit Dreh-Animation, `prefers-reduced-motion` beachten). Rückseite = eigener Text (Regie grau/kursiv) und darunter die **Selbstbewertung als Ampel** (🔴 Nöd gwüsst · 🟡 Fast · 🟢 Sass). Erst nach der Bewertung geht es zur nächsten Karte; Wischen geht auch.
 - Grosse Schrift (einstellbar), Dark Mode, Bedienung mit einer Hand (Knöpfe unten), `safe-area` für die iPhone-Ränder.
 - Alle Texte Deutsch, Schweizer Schreibweise. Knöpfe in Mundart sind ok («Sass», «Nöd gwüsst»).
@@ -257,7 +259,7 @@ Dazu: kleine Animation (Funken in Aktfarbe) beim neuen Badge, Tages-Serie und Fo
 | **M2** | Leitner mit Phasen, Bewertung, Zufall/Fällig/Schwach, Hilfestufen, Fortschritt pro Rolle, Export/Import | Täglich lernen möglich |
 | **M3** | Sprachausgabe mit Frauen-/Männerstimmen, Stimmen-Einstellungen, Hörprobe | Stichworte hören, Stimmen pro Figur |
 | **M4** | Ablauf-Ansicht, «Mein Weg», Quiz | Ablauf lernen |
-| **M5** | Badges, Startbildschirm, PWA/offline, Premieren-Countdown, Feinschliff | Fertige App fürs Ensemble |
+| **M5** | Badges, Startbildschirm, PWA/offline, Countdown Textfest/Premiere, Feinschliff | Fertige App fürs Ensemble |
 | *M6 (später)* | *Echte Sprachaufnahmen* | *siehe unten* |
 
 Nach jedem Meilenstein auf dem iPhone testen und Rückmeldung einholen, bevor es weitergeht. Nach M5 zuerst mit 2–3 Mitspielenden testen, dann ans ganze Ensemble.
@@ -283,8 +285,9 @@ Auf Gelb und Orange steht dunkle Schrift (Kontrast), auf Rot helle.
 
 - [x] Repo-Name: `theater-lernapp` (privat bis M1, dann öffentlich für GitHub Pages)
 - [x] Premiere: Ende April 2028 (genaues Datum später in der App setzen)
+- [x] Textfest: Anfang Dezember 2027 (Standard 01.12.2027)
+- [x] Ensemble-Passwort festgelegt, `stueck.enc` erzeugt
 - [x] Mitspielende nutzen die App ebenfalls → Rollenwahl
 - [x] Sprachausgabe auf Hochdeutsch vorerst ok
-- [ ] Ensemble-Passwort festlegen
 - [ ] Einverständnis von Regie/Verein, das Stück verschlüsselt in der App zu verteilen
 - [ ] Textänderungen der Regie: neues PDF → Parser erneut laufen lassen. Der Lernstand wird über Replik-ID und Text-Hash zugeordnet; geänderte Repliken kommen zurück in Fach 1, unveränderte behalten ihren Stand.

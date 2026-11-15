@@ -4,14 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#fffaf2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17130f" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="EVB Text-Lern">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
 <title>EVB Text-Lern</title>
-<style>
-  body { font: 17px/1.5 system-ui, sans-serif; margin: 0; padding: 24px 16px; background: #fffaf2; color: #222; }
-  @media (prefers-color-scheme: dark) { body { background: #1b1714; color: #eee; } }
-</style>
+<link rel="stylesheet" href="css/app.css">
+<script type="module" src="js/app.js"></script>
 </head>
 <body>
-<h1>EVB Text-Lern</h1>
-<p>Die App ist im Aufbau.</p>
+<main id="app">
+  <div class="laden" role="status"><div class="spinner"></div><p>Wird geladen …</p></div>
+</main>
+<noscript><p style="padding:16px">Diese App braucht JavaScript.</p></noscript>
 </body>
 </html>
