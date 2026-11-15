@@ -260,7 +260,7 @@ Dazu: kleine Animation (Funken in Aktfarbe) beim neuen Badge, Tages-Serie und Fo
 | **M2** ✅ | Leitner mit Phasen, Bewertung, Zufall/Fällig/Schwach, Hilfestufen, Fortschritt pro Rolle, Export/Import | Täglich lernen möglich |
 | **M3** ✅ | Sprachausgabe mit Frauen-/Männerstimmen, Stimmen-Einstellungen, Hörprobe | Stichworte hören, Stimmen pro Figur |
 | **M4** ✅ | Ablauf-Ansicht, «Mein Weg», Quiz | Ablauf lernen |
-| **M5** | Badges, Startbildschirm, PWA/offline, Countdown Textfest/Premiere, Feinschliff | Fertige App fürs Ensemble |
+| **M5** ✅ | Badges, Startbildschirm, PWA/offline, Countdown Textfest/Premiere, Feinschliff | Fertige App fürs Ensemble |
 | **M6** | **KI-Stimmen mit ElevenLabs**: natürliche Stimme pro Figur, vorab erzeugt, verschlüsselt ausgeliefert | Hörprobe und Stichworte mit natürlichen Stimmen |
 | *M7 (später)* | *Echte Sprachaufnahmen* | *siehe unten* |
 

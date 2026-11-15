@@ -1,5 +1,5 @@
 import { h, leeren } from "../dom.js";
-import { lsGet, lsSet, exportieren, importieren, rolleZuruecksetzen } from "../store.js";
+import { lsGet, lsSet, lsDel, exportieren, importieren, rolleZuruecksetzen, allesZuruecksetzen } from "../store.js";
 import { STANDARD_TERMINE, phase, tagKey } from "../leitner.js";
 import { rollenListe } from "../roles.js";
 import { VERSION } from "../version.js";
@@ -139,7 +139,15 @@ export function zeigeEinstellungen(root, app) {
             zeige(`Lernstand von ${f.kurz} gelöscht.`);
           }
         },
-      }, `Lernstand von ${f.kurz} löschen`)),
+      }, `Lernstand von ${f.kurz} löschen`),
+      h("button.knopf.warnung", {
+        async onclick() {
+          if (!confirm("Lernstand ALLER Rollen auf diesem Gerät löschen? Badges, Serien und Quiz-Resultate gehen verloren. Das lässt sich nicht rückgängig machen.")) return;
+          await allesZuruecksetzen();
+          try { Object.keys(localStorage).filter((k) => k.startsWith("tl.pos.")).forEach((k) => lsDel(k.slice(3))); } catch { /* egal */ }
+          zeige("Lernstand aller Rollen gelöscht.");
+        },
+      }, "Alles zurücksetzen (alle Rollen)")),
 
     h("p.klein.stand", `Version ${VERSION} · Textstand ${new Date(app.stueck.stand).toLocaleDateString("de-CH")} · `,
       h("a", { href: "https://github.com/defendeggu/theater-lernapp/blob/main/CHANGELOG.md", target: "_blank", rel: "noopener" }, "Was ist neu?")),

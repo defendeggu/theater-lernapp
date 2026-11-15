@@ -381,3 +381,33 @@ button { font: inherit; color: inherit; }
 .resultate li { display: flex; justify-content: space-between; gap: 8px; padding: 8px 12px; border-radius: 10px; background: var(--flaeche); border: 1px solid var(--linie); }
 .falsch-liste { text-align: left; font-size: .9em; padding-left: 18px; }
 .falsch-liste li { margin-bottom: 8px; }
+
+/* --- M5: Badges, Update-Hinweis --- */
+.badge-liste { list-style: none; padding: 0; display: grid; gap: 8px; }
+.badge { display: grid; grid-template-columns: 48px 1fr; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 14px; background: var(--flaeche); border: 1px solid var(--linie); }
+.badge p { margin: 2px 0; }
+.badge .badge-symbol { font-size: 1.8em; text-align: center; filter: grayscale(1); opacity: .45; }
+.badge.erreicht .badge-symbol { filter: none; opacity: 1; }
+.badge.erreicht { border-color: var(--akt2); }
+.badge .datum { color: var(--gruen); }
+.badge-fortschritt { position: relative; height: 20px; border-radius: 8px; background: var(--flaeche-2); overflow: hidden; margin-top: 4px; }
+.badge-fortschritt span { position: absolute; inset: 0 auto 0 0; background: var(--akt2); opacity: .5; }
+.badge-fortschritt small { position: relative; display: block; font-size: .72em; padding-left: 8px; line-height: 20px; }
+.badge-toast {
+  position: fixed; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 24px); transform: translateX(-50%); z-index: 50;
+  width: min(340px, calc(100vw - 32px)); padding: 18px; border-radius: 18px; text-align: center;
+  background: var(--flaeche); border: 3px solid var(--farbe); box-shadow: var(--schatten); animation: toast-rein .3s ease-out;
+}
+.badge-toast p { margin: 2px 0; }
+.badge-toast .badge-symbol { font-size: 2.4em; }
+.badge-toast.weg { opacity: 0; transition: opacity .25s; }
+@keyframes toast-rein { from { transform: translate(-50%, -20px); opacity: 0; } }
+.funken-wolke { position: absolute; left: 50%; top: 40px; width: 0; height: 0; pointer-events: none; }
+.funke { position: absolute; width: 6px; height: 6px; border-radius: 3px; opacity: 0; animation: funke 900ms ease-out forwards; }
+@keyframes funke { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(var(--x), var(--y)) scale(.3); opacity: 0; } }
+.update-hinweis {
+  position: fixed; left: 12px; right: 12px; bottom: calc(env(safe-area-inset-bottom, 0px) + 90px); z-index: 40;
+  display: flex; gap: 10px; align-items: center; justify-content: space-between; max-width: 560px; margin: 0 auto;
+  padding: 10px 12px; border-radius: 14px; background: var(--flaeche); border: 2px solid var(--akt2); box-shadow: var(--schatten); font-size: .9em;
+}
+@media (prefers-reduced-motion: reduce) { .funke, .badge-toast { animation: none; } }

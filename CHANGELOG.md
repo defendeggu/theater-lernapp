@@ -6,6 +6,16 @@ gilt 0.x; **1.0.0** ist die erste Version für alle (nach M5).
 - **MINOR** (0.x.0): neuer Meilenstein oder neue Funktion
 - **PATCH** (0.x.y): Fehlerbehebung, neue Textdaten (`stueck.enc`), kleine Anpassungen
 
+## [0.6.0] – 2026-11-15 · M5
+
+- Badges: 16 Auszeichnungen (Vorhang auf, Szene sitzt, Akt 1–3 sitzt, Textfest, Serien,
+  Ablauf-Profi, Regieassistenz, Ohrwurm, Nachteule, Frühaufsteher/in, Marathon, Ohne Souffleuse),
+  rollenneutral; Vitrine mit Datum und Fortschritt; Funken-Animation bei neuen Badges
+- Startseite: Kachel mit neuestem Badge
+- Offline: Service Worker speichert App und verschlüsseltes Stück; Hinweis «Neue Version» mit
+  «Aktualisieren»
+- Einstellungen: «Alles zurücksetzen» für alle Rollen
+
 ## [0.5.0] – 2026-11-15 · M4
 
 - Ablauf: alle 27 Szenen in Aktfarben mit Ort, Kurzfassung und Sprechenden; eigene Szenen markiert

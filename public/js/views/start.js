@@ -3,6 +3,7 @@ import { kartenFuer } from "../cards.js";
 import { szenenDerRolle } from "../roles.js";
 import { lsGet } from "../store.js";
 import { VERSION } from "../version.js";
+import { badgesLaden, pruefeBadges } from "./badges.js";
 import { fortschrittFuer, rolleLaden } from "../store.js";
 import { faelligeKarten, schwacheKarten, statistik, anteilSitzt, phase, serie, tagKey } from "../leitner.js";
 
@@ -22,6 +23,11 @@ export async function zeigeStart(root, app) {
   let fortschritt = new Map();
   let meta = { tage: {} };
   try { [fortschritt, meta] = await Promise.all([fortschrittFuer(f.id), rolleLaden(f.id)]); } catch { /* ohne Speicher */ }
+
+  let badges = [];
+  try { ({ liste: badges } = await badgesLaden(app)); } catch { /* leer */ }
+  const erreicht = badges.filter((b) => b.erreicht);
+  const neuestes = [...erreicht].reverse().sort((a, b) => (b.datum ?? "").localeCompare(a.datum ?? ""))[0];
 
   const nFaellig = faelligeKarten(karten, fortschritt, heute, { neuProTag: lsGet("neuProTag", 20) }).length;
   const nSchwach = schwacheKarten(karten, fortschritt, heute).length;
@@ -69,6 +75,8 @@ export async function zeigeStart(root, app) {
         h("b", "Schwache Karten"), h("span", nSchwach ? `${nSchwach} in Fach 1–2` : "keine")),
       h("a.kachel", { href: "#/hoerprobe" }, h("b", "Hörprobe"), h("span", "Szenen anhören, mitsprechen")),
       h("a.kachel", { href: "#/ablauf" }, h("b", "Ablauf & Quiz"), h("span", "Szenen, mein Weg, Quiz")),
+      h("a.kachel", { href: "#/badges" }, h("b", "Badges"),
+        h("span", neuestes ? `${neuestes.symbol} ${neuestes.name} · ${erreicht.length}/${badges.length}` : `0 von ${badges.length}`)),
       h("a.kachel", { href: "#/statistik" }, h("b", "Statistik"),
         h("span", `${stat.gesamt.gesamt - stat.gesamt.neu} von ${stat.gesamt.gesamt} gelernt`))),
 
@@ -83,4 +91,5 @@ export async function zeigeStart(root, app) {
       h("a", { href: "#/einstellungen" }, `Version ${VERSION}`),
       ` · Textstand ${new Date(app.stueck.stand).toLocaleDateString("de-CH")}`),
   ));
+  pruefeBadges(app);
 }

@@ -17,6 +17,8 @@ import { zeigeStimmen } from "./views/stimmen.js";
 import { zeigeAblauf } from "./views/ablauf.js";
 import { zeigeWeg } from "./views/weg.js";
 import { zeigeQuiz } from "./views/quiz.js";
+import { zeigeBadges } from "./views/badges.js";
+import { swRegistrieren } from "./pwa.js";
 
 const DATEN_URL = "data/stueck.enc";
 const SCHLUESSEL = "schluessel";
@@ -126,8 +128,10 @@ function route() {
     case "/ablauf": return zeigeAblauf(root, app);
     case "/weg": return zeigeWeg(root, app);
     case "/quiz": return zeigeQuiz(root, app, params);
+    case "/badges": return zeigeBadges(root, app);
     default: return zeigeStart(root, app);
   }
 }
 
+swRegistrieren();
 start();

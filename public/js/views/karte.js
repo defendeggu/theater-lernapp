@@ -9,6 +9,7 @@ import {
 import { bewertungSpeichern, fortschrittFuer, lsGet, lsSet } from "../store.js";
 import { stimmenFuerStueck, sprich, stop, entsperren, verfuegbar } from "../speech.js";
 import { sprechPause } from "../voices.js";
+import { pruefeBadges } from "./badges.js";
 
 export const AMPEL = [
   { wert: "rot", text: "Nicht gewusst", hilfe: "Zurück in Fach 1, kommt bald wieder" },
@@ -290,7 +291,9 @@ export async function zeigeKarten(root, app, params) {
       queue.splice(Math.min(i + 1 + WIEDERHOLEN_NACH, queue.length), 0, k);
     }
     try {
-      await bewertungSpeichern(rolle, eintrag, heute, { karte: k.id, modus, zeit: Date.now() });
+      await bewertungSpeichern(rolle, eintrag, heute, { karte: k.id, modus, zeit: Date.now() },
+        { wert, hilfe, stunde: new Date().getHours() });
+      pruefeBadges(app);
     } catch { /* Speicher gesperrt: Sitzung läuft trotzdem weiter */ }
     gehe(1);
   }

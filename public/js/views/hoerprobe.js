@@ -5,6 +5,7 @@ import { szenenDerRolle } from "../roles.js";
 import { lsGet, lsSet, rolleAktualisieren } from "../store.js";
 import { stimmenFuerStueck, sprich, stop, entsperren, verfuegbar, wachHalten } from "../speech.js";
 import { sprechPause } from "../voices.js";
+import { pruefeBadges } from "./badges.js";
 
 export const EIGEN_MODI = [
   ["anhalten", "Anhalten", "Wartet, bis du «Weiter» tippst"],
@@ -187,6 +188,7 @@ export async function zeigeHoerprobe(root, app, params) {
     spielt = false;
     wachHalten(false);
     try { await rolleAktualisieren(rolle, (x) => { x.hoerproben = (x.hoerproben ?? 0) + 1; }); } catch { /* egal */ }
+    pruefeBadges(app);
     status.textContent = "";
     leeren(seite.querySelector(".hoer-aktionen")).append(
       h("a.knopf", { href: "#/hoerprobe" }, "Szenen"),

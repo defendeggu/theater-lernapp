@@ -2,6 +2,7 @@
 import { h, leeren, kontrastFarbe } from "../dom.js";
 import { erzeugeQuiz, frageReihenfolge, pruefen, richtigePositionen } from "../quiz.js";
 import { rolleLaden, rolleAktualisieren } from "../store.js";
+import { pruefeBadges } from "./badges.js";
 
 async function auswahl(root, app) {
   let meta = { quiz: [] };
@@ -143,6 +144,7 @@ export async function zeigeQuiz(root, app, params) {
       falsch.length > 0 && art !== "reihenfolge" && h("ul.falsch-liste", falsch.map((f) => h("li", h("b", f.frage), h("br"), f.aufloesung))),
       h("a.knopf.primaer.gross", { href: `#/quiz?art=${art}${akt ? "&akt=" + akt : ""}&n=${Date.now()}` }, "Nochmals"),
       h("a.knopf", { href: "#/ablauf" }, "Zum Ablauf")));
+    pruefeBadges(app);
   }
 
   zeichne();

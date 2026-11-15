@@ -62,6 +62,7 @@ deinen Text mit Karteikarten, Sprachausgabe und Hörproben – auf dem iPhone od
 | **Hörprobe** | Eine ganze Szene zum Anhören – die anderen Rollen sprechen, bei deinem Einsatz hält die App an. Ideal mit Kopfhörern. |
 | **Ablauf & Quiz** | Alle Szenen mit Kurzfassung, «Mein Weg» durch deine Szenen, Quiz zum Ablauf und Szenen in die richtige Reihenfolge bringen. |
 | **Statistik** | Wie viel sitzt schon, pro Akt und pro Szene. |
+| **Badges** | Auszeichnungen für Fortschritt, Serien, Quiz und Hörproben – mit Funken, wenn du eins erreichst. |
 
 Die Akte haben eigene Farben: **Akt 1 gelb**, **Akt 2 orange**, **Akt 3 rot** – wie ein Feuer,
 das immer heisser brennt.
@@ -106,6 +107,13 @@ Unter **Einstellungen → Stimmen** kannst du:
 **Gesperrter Bildschirm:** iPhone und Android halten die Sprachausgabe an, wenn das Gerät gesperrt
 wird oder der Browser in den Hintergrund geht. Während einer Hörprobe hält die App den Bildschirm deshalb wach.
 Mit Kopfhörern: iPhone entsperrt lassen und z.B. in die Tasche stecken.
+
+### Offline und Updates
+
+Nach dem ersten Öffnen funktioniert die App **auch ohne Internet** (z.B. im Zug oder im Probelokal
+ohne Netz). Gibt es eine neue Version oder neuen Text, erscheint unten der Hinweis
+**«Eine neue Version der App ist bereit»** → «Aktualisieren» tippen. Die aktuelle Version steht
+in der Fusszeile der Startseite.
 
 ### Lernstand sichern
 
@@ -200,6 +208,15 @@ meldet der Parser eine Warnung statt die Korrektur blind anzuwenden.
 ihren Stand. Achtung: Wird eine Replik eingefügt oder gelöscht, verschieben sich die Nummern
 danach in derselben Szene.
 
+### Neue Version veröffentlichen
+
+1. Version in `public/js/version.js` **und** `public/sw.js` erhöhen (SemVer), Eintrag oben in `CHANGELOG.md`.
+2. Neue Dateien unter `public/js/` auch in `SHELL` in `public/sw.js` eintragen (ein Test prüft das).
+3. Tests laufen lassen, committen, `git tag -a vX.Y.Z`, `git push origin main --tags`.
+
+Neue Textdaten (`stueck.enc`) braucht keine neue Version: Der Service Worker holt den Text immer
+zuerst aus dem Netz. Für den Changelog ist ein PATCH trotzdem sinnvoll.
+
 ### Passwort wechseln
 
 `node tools/encrypt.mjs` mit dem neuen Passwort ausführen, committen, pushen. Beim nächsten
@@ -219,7 +236,7 @@ Tests verwenden nur erfundene Figuren und Sätze (`test/fixtures/demo.mjs`), nie
 |---|---|
 | `tools/` | Parser, Review, Verschlüsselung, Klartext-Prüfung, `make_icons.py` (App-Icons) |
 | `public/` | die App (wird auf GitHub Pages veröffentlicht) |
-| `public/js/` | `cards.js` Karten · `leitner.js` Lernkartei/Phasen · `hilfe.js` Hilfestufen · `voices.js`/`speech.js` Stimmen · `quiz.js` Quiz/Mein Weg · `store.js` Speicher · `crypto.js` Entschlüsselung · `views/` Ansichten |
+| `public/js/` | `cards.js` Karten · `leitner.js` Lernkartei/Phasen · `hilfe.js` Hilfestufen · `voices.js`/`speech.js` Stimmen · `quiz.js` Quiz/Mein Weg · `badges.js` Badges · `pwa.js` + `sw.js` Offline · `store.js` Speicher · `crypto.js` Entschlüsselung · `views/` Ansichten |
 | `test/` | `node --test` und `pytest` |
 | `docs/PLAN.md` | verbindlicher Plan mit Datenmodell und Meilensteinen |
 
@@ -235,7 +252,7 @@ Tests verwenden nur erfundene Figuren und Sätze (`test/fixtures/demo.mjs`), nie
 
 Aktuelle Version: siehe Fusszeile der App und [CHANGELOG.md](CHANGELOG.md) (SemVer).
 | M4 | Ablauf-Ansicht, «Mein Weg», Ablauf-Quiz | ✅ |
-| M5 | Badges, Offline-App (PWA), Feinschliff | offen |
+| M5 | Badges, Offline-App (PWA), Feinschliff | ✅ |
 | M6 | Natürliche KI-Stimmen mit ElevenLabs (vorab erzeugt, verschlüsselt) | geplant |
 | M7 | Echte Sprachaufnahmen | später |
 

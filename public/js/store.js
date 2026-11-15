@@ -6,6 +6,8 @@
 // - localStorage: kleine Einstellungen (Rolle, Position, Schrift, Termine).
 // Ein Rollenwechsel löscht nichts: alles ist nach Rolle getrennt.
 
+import { metaNachBewertung } from "./badges.js";
+
 const DB_NAME = "theater-lernapp";
 const DB_VERSION = 2;
 let dbPromise = null;
@@ -75,8 +77,8 @@ export async function rolleLaden(rolle) {
   return (await tx("rollen", "readonly", (t) => t.objectStore("rollen").get(rolle))) ?? leereRolle(rolle);
 }
 
-/** Bewertung speichern: Fortschritt der Karte + Lerntag der Rolle in einer Transaktion. */
-export function bewertungSpeichern(rolle, eintrag, heute, zuletzt) {
+/** Bewertung speichern: Fortschritt der Karte + Lerntag (+ Badge-Infos) der Rolle in einer Transaktion. */
+export function bewertungSpeichern(rolle, eintrag, heute, zuletzt, info = null) {
   return tx(["fortschritt", "rollen"], "readwrite", (t) => {
     t.objectStore("fortschritt").put({ ...eintrag, rolle });
     const rs = t.objectStore("rollen");
@@ -84,7 +86,7 @@ export function bewertungSpeichern(rolle, eintrag, heute, zuletzt) {
       const r = e.target.result ?? leereRolle(rolle);
       r.tage[heute] = (r.tage[heute] ?? 0) + 1;
       r.zuletzt = zuletzt;
-      rs.put(r);
+      rs.put(info ? metaNachBewertung(r, info) : r);
     };
   });
 }
@@ -109,6 +111,14 @@ export function rolleZuruecksetzen(rolle) {
       if (c) { fs.delete(c.primaryKey); c.continue(); }
     };
     t.objectStore("rollen").delete(rolle);
+  });
+}
+
+/** Lernstand ALLER Rollen löschen (Schlüssel und Einstellungen bleiben). */
+export function allesZuruecksetzen() {
+  return tx(["fortschritt", "rollen"], "readwrite", (t) => {
+    t.objectStore("fortschritt").clear();
+    t.objectStore("rollen").clear();
   });
 }
 
@@ -161,7 +171,10 @@ export async function importieren(json, nurRolle = null) {
         const quiz = [...(alt.quiz ?? []), ...(meta?.quiz ?? []).filter((q) => !(alt.quiz ?? []).some((a) => a.zeit === q.zeit))];
         const zuletzt = (meta?.zuletzt?.zeit ?? 0) > (alt.zuletzt?.zeit ?? 0) ? meta.zuletzt : alt.zuletzt;
         const hoerproben = Math.max(alt.hoerproben ?? 0, meta?.hoerproben ?? 0);
-        rs.put({ ...alt, rolle, tage, badges, quiz, zuletzt, hoerproben });
+        const ohneHilfeMax = Math.max(alt.ohneHilfeMax ?? 0, meta?.ohneHilfeMax ?? 0);
+        const nachteule = !!(alt.nachteule || meta?.nachteule);
+        const fruehaufsteher = !!(alt.fruehaufsteher || meta?.fruehaufsteher);
+        rs.put({ ...alt, rolle, tage, badges, quiz, zuletzt, hoerproben, ohneHilfeMax, nachteule, fruehaufsteher });
       };
     }
   });

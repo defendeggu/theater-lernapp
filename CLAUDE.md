@@ -103,7 +103,8 @@ Python-Abhängigkeiten nur für die Werkzeuge: `pip install pdfplumber pytest`.
 
 ## Versionen
 
-- SemVer, Quelle der Wahrheit: `public/js/version.js` (sichtbar in der Fusszeile). Zu jeder neuen Version
+- SemVer, Quelle der Wahrheit: `public/js/version.js` (sichtbar in der Fusszeile); `public/sw.js` hat
+  dieselbe Nummer (Test). Neue Dateien in `public/` immer in `SHELL` in `sw.js` eintragen (Test). Zu jeder neuen Version
   einen Eintrag oben in `CHANGELOG.md` (Test prüft das) und ein Git-Tag `vX.Y.Z` setzen und pushen.
 - MINOR = Meilenstein/neue Funktion, PATCH = Fehlerbehebung/neue Textdaten, 1.0.0 = Freigabe fürs Ensemble (nach M5).
 
