@@ -68,6 +68,7 @@ export async function zeigeStart(root, app) {
       h("a.kachel", { href: "#/lernen?modus=schwach", "aria-disabled": nSchwach ? null : "true" },
         h("b", "Schwache Karten"), h("span", nSchwach ? `${nSchwach} in Fach 1–2` : "keine")),
       h("a.kachel", { href: "#/hoerprobe" }, h("b", "Hörprobe"), h("span", "Szenen anhören, mitsprechen")),
+      h("a.kachel", { href: "#/ablauf" }, h("b", "Ablauf & Quiz"), h("span", "Szenen, mein Weg, Quiz")),
       h("a.kachel", { href: "#/statistik" }, h("b", "Statistik"),
         h("span", `${stat.gesamt.gesamt - stat.gesamt.neu} von ${stat.gesamt.gesamt} gelernt`))),
 

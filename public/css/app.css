@@ -342,3 +342,42 @@ button { font: inherit; color: inherit; }
 .figur-wahl select { font: inherit; font-size: max(16px, .9em); padding: 8px; border-radius: 10px; border: 1px solid var(--linie); background: var(--bg); color: var(--text); width: 100%; }
 .unbekannte li { display: grid; gap: 6px; }
 .kacheln .kachel:last-child:nth-child(odd) { grid-column: span 2; }
+
+/* --- M4: Ablauf, Mein Weg, Quiz --- */
+.ablauf-liste, .weg-liste { list-style: none; padding: 0; display: grid; gap: 10px; margin: 10px 0 20px; }
+.ablauf-szene { padding: 12px 14px; border-radius: 14px; background: var(--flaeche); border: 1px solid var(--linie); border-left: 6px solid var(--akt); }
+.ablauf-szene:not(.dabei) { opacity: .78; }
+.ablauf-szene p { margin: 6px 0; }
+.ablauf-kopf { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.ablauf-kopf .ort { color: var(--text-2); font-size: .85em; }
+.du { margin-left: auto; font-size: .72em; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--akt); color: var(--akt-text, #1f1300); }
+.link-klein { font-size: .85em; font-weight: 600; }
+.weg-szene { display: grid; grid-template-columns: 34px 1fr; gap: 10px; }
+.weg-nr { width: 34px; height: 34px; border-radius: 17px; display: grid; place-items: center; background: var(--akt); color: #1f1300; font-weight: 700; }
+.weg-inhalt { padding: 12px 14px; border-radius: 14px; background: var(--flaeche); border: 1px solid var(--linie); }
+.weg-daten { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; margin: 8px 0; font-size: .92em; }
+.weg-daten dt { color: var(--text-2); font-size: .85em; }
+.weg-daten dd { margin: 0; }
+.frage { font-size: 1.2em; margin: 16px 0 6px; }
+.kontext { padding: 10px 12px; border-radius: 12px; background: var(--flaeche-2); margin: 6px 0 12px; }
+.optionen, .reihen-optionen { display: grid; gap: 8px; margin: 10px 0; }
+.option { text-align: left; padding: 12px 14px; border-radius: 12px; border: 2px solid var(--linie); background: var(--flaeche); cursor: pointer; min-height: 52px; display: flex; gap: 10px; align-items: center; }
+.option.gewaehlt { border-color: var(--akt2); background: var(--flaeche-2); }
+.option.richtig { border-color: var(--gruen); }
+.option.falsch { border-color: var(--rot); }
+.option:disabled { cursor: default; }
+.reihen-optionen .option:disabled.gewaehlt { opacity: .45; }
+.option .nr:not(:empty) { flex: none; width: 28px; height: 28px; border-radius: 14px; display: grid; place-items: center; background: var(--akt2); color: #1f1300; font-weight: 700; }
+.reihe-gewaehlt { margin: 6px 0; padding-left: 24px; font-size: .9em; color: var(--text-2); }
+.reihe-gewaehlt:empty { display: none; }
+.feedback { margin: 12px 0; padding: 12px 14px; border-radius: 12px; }
+.feedback:empty { display: none; }
+.feedback.ok { background: var(--flaeche); border: 2px solid var(--gruen); }
+.feedback.nein { background: var(--flaeche); border: 2px solid var(--rot); }
+.feedback p { margin: 6px 0 0; }
+.aufloesung { margin: 6px 0 0; padding-left: 20px; font-size: .9em; }
+.quiz-aktionen { display: grid; gap: 8px; margin: 12px 0 24px; }
+.resultate { list-style: none; padding: 0; display: grid; gap: 6px; }
+.resultate li { display: flex; justify-content: space-between; gap: 8px; padding: 8px 12px; border-radius: 10px; background: var(--flaeche); border: 1px solid var(--linie); }
+.falsch-liste { text-align: left; font-size: .9em; padding-left: 18px; }
+.falsch-liste li { margin-bottom: 8px; }

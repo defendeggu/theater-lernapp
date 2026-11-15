@@ -27,9 +27,20 @@ export function h(tag, attrs, ...kinder) {
   return el;
 }
 
+/** Leert ein Element. Gibt { append } zurück, das null/undefined/false überspringt
+ *  (das native append würde sie als Text "false"/"undefined" einfügen). */
 export function leeren(el) {
   while (el.firstChild) el.firstChild.remove();
-  return el;
+  return {
+    el,
+    append(...kinder) {
+      for (const c of kinder.flat(Infinity)) {
+        if (c === null || c === undefined || c === false) continue;
+        el.append(c instanceof Node ? c : document.createTextNode(String(c)));
+      }
+      return el;
+    },
+  };
 }
 
 /** Textfarbe für eine Hintergrundfarbe (dunkel auf Gelb/Orange, hell auf Rot). */

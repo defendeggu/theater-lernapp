@@ -59,3 +59,18 @@ export const demo = {
     ] },
   ],
 };
+
+// Erweitertes Demo-Stück: mehrere Szenen pro Akt (für Quiz/Reihenfolge). Ebenfalls frei erfunden.
+export const demoGross = structuredClone(demo);
+for (const [akt, ids] of [[1, ["1.2", "1.3"]], [2, ["2.2", "2.3"]], [3, ["3.2"]]]) {
+  for (const id of ids) {
+    demoGross.akte[akt - 1].szenen.push({
+      id, ort: akt === 2 ? "Lager" : "Dorfplatz", ort_typ: akt === 2 ? "lager" : "dorf",
+      personen: ["vreni", "mona"], kurzfassung: `In Szene ${id} passiert etwas Neues. Dann geht es weiter.`, regie: [],
+      repliken: [
+        { id: `${id}-001`, sprecher: ["vreni"], sammel: null, text: `Satz eis vo ${id}.`, regie: [], hash: id + "a" },
+        { id: `${id}-002`, sprecher: ["mona"], sammel: null, text: `Satz zwei vo ${id}.`, regie: [{ pos: 18, text: "geht ab" }], hash: id + "b" },
+      ],
+    });
+  }
+}

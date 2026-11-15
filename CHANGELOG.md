@@ -6,6 +6,14 @@ gilt 0.x; **1.0.0** ist die erste Version für alle (nach M5).
 - **MINOR** (0.x.0): neuer Meilenstein oder neue Funktion
 - **PATCH** (0.x.y): Fehlerbehebung, neue Textdaten (`stueck.enc`), kleine Anpassungen
 
+## [0.5.0] – 2026-11-15 · M4
+
+- Ablauf: alle 27 Szenen in Aktfarben mit Ort, Kurzfassung und Sprechenden; eigene Szenen markiert
+- «Mein Weg durchs Stück»: eigene Szenen mit Auftritt, erstem Stichwort, letztem Satz und Abgang
+- Ablauf-Quiz mit 7 Fragetypen (Reihenfolge pro Akt, Was passiert danach, Ort, Wer spricht,
+  Bist du dabei, Kurzfassung zuordnen, Wer spricht dein Stichwort); Resultate pro Rolle gespeichert
+- Behoben: leere Werte erschienen auf einigen Seiten als «false»/«undefined»
+
 ## [0.4.0] – 2026-11-15
 
 - Eigenes App-Icon «Amboss mit Funken» in den Aktfarben, Web-Manifest: auf Android installierbar

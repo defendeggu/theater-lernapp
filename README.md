@@ -60,6 +60,7 @@ deinen Text mit Karteikarten, Sprachausgabe und Hörproben – auf dem iPhone od
 | **Zufall** | Gemischt aus dem ganzen Stück, einem Akt oder einer Szene. |
 | **Schwache Karten** | Nur die Karten, die noch nicht sitzen. |
 | **Hörprobe** | Eine ganze Szene zum Anhören – die anderen Rollen sprechen, bei deinem Einsatz hält die App an. Ideal mit Kopfhörern. |
+| **Ablauf & Quiz** | Alle Szenen mit Kurzfassung, «Mein Weg» durch deine Szenen, Quiz zum Ablauf und Szenen in die richtige Reihenfolge bringen. |
 | **Statistik** | Wie viel sitzt schon, pro Akt und pro Szene. |
 
 Die Akte haben eigene Farben: **Akt 1 gelb**, **Akt 2 orange**, **Akt 3 rot** – wie ein Feuer,
@@ -218,7 +219,7 @@ Tests verwenden nur erfundene Figuren und Sätze (`test/fixtures/demo.mjs`), nie
 |---|---|
 | `tools/` | Parser, Review, Verschlüsselung, Klartext-Prüfung, `make_icons.py` (App-Icons) |
 | `public/` | die App (wird auf GitHub Pages veröffentlicht) |
-| `public/js/` | `cards.js` Karten · `leitner.js` Lernkartei/Phasen · `hilfe.js` Hilfestufen · `voices.js`/`speech.js` Stimmen · `store.js` Speicher · `crypto.js` Entschlüsselung · `views/` Ansichten |
+| `public/js/` | `cards.js` Karten · `leitner.js` Lernkartei/Phasen · `hilfe.js` Hilfestufen · `voices.js`/`speech.js` Stimmen · `quiz.js` Quiz/Mein Weg · `store.js` Speicher · `crypto.js` Entschlüsselung · `views/` Ansichten |
 | `test/` | `node --test` und `pytest` |
 | `docs/PLAN.md` | verbindlicher Plan mit Datenmodell und Meilensteinen |
 
@@ -233,7 +234,7 @@ Tests verwenden nur erfundene Figuren und Sätze (`test/fixtures/demo.mjs`), nie
 | – | App-Icon, Manifest (Android installierbar) | ✅ |
 
 Aktuelle Version: siehe Fusszeile der App und [CHANGELOG.md](CHANGELOG.md) (SemVer).
-| M4 | Ablauf-Ansicht, «Mein Weg», Ablauf-Quiz | offen |
+| M4 | Ablauf-Ansicht, «Mein Weg», Ablauf-Quiz | ✅ |
 | M5 | Badges, Offline-App (PWA), Feinschliff | offen |
 | M6 | Natürliche KI-Stimmen mit ElevenLabs (vorab erzeugt, verschlüsselt) | geplant |
 | M7 | Echte Sprachaufnahmen | später |

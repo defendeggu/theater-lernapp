@@ -14,6 +14,9 @@ import { STANDARD_TERMINE } from "./leitner.js";
 import { stop as sprachausgabeStop, wachHalten } from "./speech.js";
 import { zeigeHoerprobe } from "./views/hoerprobe.js";
 import { zeigeStimmen } from "./views/stimmen.js";
+import { zeigeAblauf } from "./views/ablauf.js";
+import { zeigeWeg } from "./views/weg.js";
+import { zeigeQuiz } from "./views/quiz.js";
 
 const DATEN_URL = "data/stueck.enc";
 const SCHLUESSEL = "schluessel";
@@ -120,6 +123,9 @@ function route() {
     case "/statistik": return zeigeStatistik(root, app);
     case "/hoerprobe": return zeigeHoerprobe(root, app, params);
     case "/stimmen": return zeigeStimmen(root, app);
+    case "/ablauf": return zeigeAblauf(root, app);
+    case "/weg": return zeigeWeg(root, app);
+    case "/quiz": return zeigeQuiz(root, app, params);
     default: return zeigeStart(root, app);
   }
 }
