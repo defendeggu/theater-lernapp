@@ -1,0 +1,54 @@
+name: Tests und GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pytest
+      - run: node --test test/*.test.mjs
+      - run: python -m pytest -q test
+      # Sicherheitsnetz: kein Klartext aus dem Stück im Repo
+      - name: Keine privaten Dateien im Repo
+        run: |
+          if git ls-files | grep -E '^(input/|data/private/)|\.pdf$|stueck\.json$|ablauf\.json$'; then
+            echo "Private Dateien im Repo!"; exit 1
+          fi
+
+  deploy:
+    # GitHub Pages braucht bei Gratis-Konten ein öffentliches Repo
+    if: github.event_name != 'pull_request' && github.event.repository.private == false
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+      - id: deployment
+        uses: actions/deploy-pages@v4

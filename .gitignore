@@ -1,0 +1,14 @@
+# Stücktext – NIE committen
+input/
+data/private/
+
+# Python / Node
+__pycache__/
+*.pyc
+.pytest_cache/
+node_modules/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
