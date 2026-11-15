@@ -248,7 +248,8 @@ Dazu: kleine Animation (Funken in Aktfarbe) beim neuen Badge, Tages-Serie und Fo
 - **Karte:** oben Akt-Farbband mit «Akt 2 · Szene 2.11 · Lager»; Vorderseite = Stichwort mit Sprecher und Knopf ▶︎ (vorlesen). Nachdem man das Stichwort gelesen oder gehört und den eigenen Text gesprochen hat, wird die Karte **von Hand umgedreht** (grosser Knopf «Umdrehen» oder Tippen auf die Karte, mit Dreh-Animation, `prefers-reduced-motion` beachten). Rückseite = eigener Text (Regie grau/kursiv) und darunter die **Selbstbewertung als Ampel** (🔴 Nicht gewusst · 🟡 Fast · 🟢 Gewusst). Erst nach der Bewertung geht es zur nächsten Karte; Wischen geht auch.
 - Grosse Schrift (einstellbar), Dark Mode, Bedienung mit einer Hand (Knöpfe unten), `safe-area` für die iPhone-Ränder.
 - Alle Texte Deutsch, Schweizer Schreibweise. Knöpfe in normalem Hochdeutsch, kein Slang («Nicht gewusst», «Fast», «Gewusst»).
-- Läuft auch auf Android und am Computer, getestet wird aber in erster Linie auf dem iPhone.
+- Läuft auch auf Android (Chrome, installierbar über das Manifest) und am Computer. Getestet wird im iPhone- und im Android-Format.
+- **App-Icon:** eigenes Motiv «Amboss mit Funken» in den Aktfarben (`tools/make_icons.py`) – bewusst kein Bild aus dem Textbuch (Personen, Rechte).
 
 ## 9. Vorgehen in Meilensteinen
 

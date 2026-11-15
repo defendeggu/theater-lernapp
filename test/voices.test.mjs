@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  stimmenVorname, stimmenQualitaet, sprachRang, deutscheStimmen, zuteilen, sprechText, sprechStuecke, sprechPause,
+  stimmenVorname, stimmenQualitaet, geschlechtAusName, sprachRang, deutscheStimmen, zuteilen, sprechText, sprechStuecke, sprechPause,
 } from "../public/js/voices.js";
 
 const v = (name, lang = "de-DE", extra = {}) => ({ name, lang, voiceURI: "uri:" + name, localService: true, ...extra });
@@ -125,4 +125,22 @@ test("Sprechtext und Stücke", () => {
   assert.equal(sprechPause("eis"), 2500);
   assert.equal(sprechPause("w ".repeat(20)), 9000);
   assert.equal(sprechPause("w ".repeat(200)), 25000);
+});
+
+test("Android: Geschlecht aus Wörtern im Namen", () => {
+  assert.equal(geschlechtAusName("Deutsch (Deutschland) – weiblich"), "w");
+  assert.equal(geschlechtAusName("German Male 2"), "m");
+  assert.equal(geschlechtAusName("Deutsch Deutschland"), null);
+  assert.equal(geschlechtAusName("Maleika"), null);
+  const s = deutscheStimmen([v("Deutsch Female", "de-DE"), v("Deutsch Male", "de-DE")]);
+  assert.deepEqual(s.map((x) => x.geschlecht).sort(), ["m", "w"]);
+});
+
+test("Android: nur Stimmen ohne bekanntes Geschlecht -> Männer tiefer, Frauen höher, Hinweis", () => {
+  const st = deutscheStimmen([v("Deutsch Deutschland", "de-DE", { voiceURI: "de-de-x-deb-local" })]);
+  const { zuteilung: z, fehlt, unbekannteGenutzt } = zuteilen(FIGUREN, st);
+  assert.deepEqual(fehlt, []);
+  assert.equal(unbekannteGenutzt, true);
+  assert.ok(z.get("joe").pitch < 1 && z.get("alina").pitch > 1, `${z.get("joe").pitch} / ${z.get("alina").pitch}`);
+  assert.equal(z.get("joe").stimme, "de-de-x-deb-local");
 });

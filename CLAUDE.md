@@ -30,6 +30,9 @@ GitHub Pages ist öffentlich. Das Stück ist unveröffentlicht.
 - Rollenneutral: keine Rolle im Code fest verdrahtet. Die gewählte Rolle bestimmt Karten,
   Fortschritt, Badges, Quiz und «Mein Weg».
 - iPhone zuerst: Safari/iOS 17+, Bedienung mit einer Hand (Knöpfe unten), `safe-area` beachten.
+- Android (Chrome) muss ebenso laufen: Manifest + maskable Icons, Stimmen oft ohne bekanntes
+  Geschlecht (`voices.js` verschiebt dann die Tonhöhe, Nutzer ordnet zu). Browser-Tests auch im
+  Pixel-Format (412×915) mit Android-User-Agent laufen lassen.
 - Oberfläche Deutsch mit Schweizer Schreibweise (ss statt ß). Stücktext bleibt exakt im Dialekt.
 - Aktfarben: Akt 1 Gelb `#E8B10E`, Akt 2 Orange `#E9731C`, Akt 3 Rot `#C62828`
   (auf Gelb/Orange dunkle Schrift).
@@ -53,6 +56,7 @@ tools/
   review.py             -> data/private/review.html
   encrypt.mjs           stueck.json + ablauf.json -> public/data/stueck.enc
   check_klartext.py     Commit-Schutz: kein Stücktext in getrackten Dateien
+  make_icons.py         App-Icons (Amboss mit Funken) -> public/icons/ – kein Bild aus dem Textbuch
 public/                 wird auf GitHub Pages veröffentlicht
   index.html, manifest.webmanifest, sw.js, robots.txt
   css/app.css

@@ -32,6 +32,13 @@ export function stimmenVorname(name) {
   return n.replace(VORSILBEN, "").split(/[\s(\-–,]/)[0].toLowerCase();
 }
 
+/** Geschlecht aus Wörtern im Namen (z.B. Android/Samsung: "Deutsch – weiblich", "German Male"). */
+export function geschlechtAusName(name) {
+  if (/(^|[^\p{L}])(female|weiblich|frau)(?![\p{L}])/iu.test(name)) return "w";
+  if (/(^|[^\p{L}])(male|männlich|mann)(?![\p{L}])/iu.test(name)) return "m";
+  return null;
+}
+
 export function stimmenQualitaet(name) {
   if (/premium/i.test(name)) return 3;
   if (/erweitert|enhanced|natural|neural|online/i.test(name)) return 2;
@@ -60,7 +67,7 @@ export function deutscheStimmen(voices, overrides = {}) {
       name: v.name,
       lang: v.lang,
       lokal: v.localService !== false,
-      geschlecht: overrides[v.voiceURI || v.name] ?? BEKANNTE_STIMMEN[stimmenVorname(v.name)] ?? null,
+      geschlecht: overrides[v.voiceURI || v.name] ?? BEKANNTE_STIMMEN[stimmenVorname(v.name)] ?? geschlechtAusName(v.name),
       qualitaet: stimmenQualitaet(v.name),
       rang: sprachRang(v.lang),
     }))
@@ -80,6 +87,7 @@ export const VARIANTEN = [
 ];
 const ALTER_PITCH = { erwachsen: 1, jugendlich: 1.15, kind: 1.3 };
 const ERSATZ_PITCH = { m: 0.72, w: 1.35 }; // Frauenstimme tiefer für Männer, Männerstimme höher für Frauen
+const UNBEKANNT_PITCH = { m: 0.88, w: 1.12 }; // Stimme ohne bekanntes Geschlecht (oft Android): leicht verschieben
 const runde = (x) => Math.round(Math.min(2, Math.max(0.5, x)) * 100) / 100;
 
 /**
@@ -96,8 +104,11 @@ export function zuteilen(figuren, stimmen, manuell = {}) {
   };
   const unbekannt = stimmen.filter((s) => !s.geschlecht);
   const fehlt = ["w", "m"].filter((g) => !pool[g].length);
-  // Fehlt ein Geschlecht, aber es gibt unbekannte Stimmen: diese nehmen (ohne Verstellung)
-  for (const g of fehlt) if (unbekannt.length) pool[g] = unbekannt;
+  // Fehlt ein Geschlecht, aber es gibt unbekannte Stimmen: diese nehmen
+  const ausUnbekannt = new Set();
+  for (const g of fehlt) if (unbekannt.length) { pool[g] = unbekannt; ausUnbekannt.add(g); }
+  // Kommen BEIDE Geschlechter aus unbekannten Stimmen, Tonhöhe leicht nach Geschlecht verschieben
+  const beideUnbekannt = ausUnbekannt.size === 2;
 
   const reihenfolge = [...figuren].sort((a, b) => (b.einsaetze ?? 0) - (a.einsaetze ?? 0) || a.id.localeCompare(b.id));
   const zaehler = { w: 0, m: 0 };
@@ -118,7 +129,8 @@ export function zuteilen(figuren, stimmen, manuell = {}) {
     const v = VARIANTEN[Math.floor(k / n) % VARIANTEN.length];
     const jung = (ALTER_PITCH[f.alter] ?? 1) > 1;
     // Jugendliche/Kinder nie tiefer als die Grundstimme (sonst verschwindet der Altersunterschied)
-    let pitch = (jung ? Math.max(1, v.pitch) : v.pitch) * (ALTER_PITCH[f.alter] ?? 1) * (ersatz ? ERSATZ_PITCH[g] : 1);
+    let pitch = (jung ? Math.max(1, v.pitch) : v.pitch) * (ALTER_PITCH[f.alter] ?? 1) * (ersatz ? ERSATZ_PITCH[g] : 1)
+      * (beideUnbekannt ? UNBEKANNT_PITCH[g] : 1);
     let rate = v.rate;
     let gewaehlt = stimme;
 
@@ -135,7 +147,12 @@ export function zuteilen(figuren, stimmen, manuell = {}) {
       ersatz,
     });
   }
-  return { zuteilung, fehlt: stimmen.length ? fehlt.filter((g) => !unbekannt.length) : [], keineDeutsche: !stimmen.length };
+  return {
+    zuteilung,
+    fehlt: stimmen.length ? fehlt.filter((g) => !unbekannt.length) : [],
+    keineDeutsche: !stimmen.length,
+    unbekannteGenutzt: ausUnbekannt.size > 0, // Hinweis: Stimmen unter "Stimmen zuordnen" als Frau/Mann markieren
+  };
 }
 
 /** Text für die Sprachausgabe aufbereiten (Regie ist schon entfernt). */

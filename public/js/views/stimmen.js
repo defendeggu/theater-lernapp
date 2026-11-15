@@ -4,8 +4,13 @@ import { lsGet, lsSet, lsDel } from "../store.js";
 import { stimmenFuerStueck, sprich, entsperren, verfuegbar, stop } from "../speech.js";
 import { rollenListe } from "../roles.js";
 
-const ANLEITUNG = "iPhone: Einstellungen → Bedienungshilfen → Gesprochene Inhalte → Stimmen → Deutsch → "
+export const istAndroid = () => /Android/i.test(globalThis.navigator?.userAgent ?? "");
+const ANLEITUNG_IOS = "iPhone: Einstellungen → Bedienungshilfen → Gesprochene Inhalte → Stimmen → Deutsch → "
   + "eine Frauen- und eine Männerstimme laden (am besten «Erweitert»). Danach die App neu öffnen.";
+const ANLEITUNG_ANDROID = "Android: Einstellungen → System (oder Bedienungshilfen) → Sprachen → Text-in-Sprache-Ausgabe → "
+  + "bevorzugtes Modul «Sprachausgabe von Google» → Zahnrad → Sprachdaten installieren → Deutsch (Deutschland) laden. "
+  + "Danach Chrome ganz schliessen und die App neu öffnen.";
+const anleitung = () => (istAndroid() ? ANLEITUNG_ANDROID : ANLEITUNG_IOS);
 
 function auswahl(name, titel, optionen, wert, onchange) {
   return h("fieldset.auswahl", h("legend", titel),
@@ -25,7 +30,7 @@ export async function zeigeStimmen(root, app) {
     return;
   }
 
-  const { zuteilung, stimmen, fehlt, keineDeutsche } = await stimmenFuerStueck(app.stueck);
+  const { zuteilung, stimmen, fehlt, keineDeutsche, unbekannteGenutzt } = await stimmenFuerStueck(app.stueck);
   const manuell = lsGet("stimmen.manuell", {});
   const overrides = lsGet("stimmen.geschlecht", {});
   const figs = rollenListe(app.stueck).flatMap((g) => g.rollen);
@@ -36,9 +41,13 @@ export async function zeigeStimmen(root, app) {
   const g = (x) => (x === "w" ? "Frau" : x === "m" ? "Mann" : "?");
 
   const hinweise = [];
-  if (keineDeutsche) hinweise.push("Auf diesem Gerät ist keine deutsche Stimme installiert. " + ANLEITUNG);
+  if (unbekannteGenutzt) {
+    hinweise.push("Bei einigen Stimmen weiss die App nicht, ob es eine Frauen- oder Männerstimme ist "
+      + "(häufig auf Android). Ordne sie unten unter «Stimmen zuordnen» zu – dann klingen die Figuren passender.");
+  }
+  if (keineDeutsche) hinweise.push("Auf diesem Gerät ist keine deutsche Stimme installiert. " + anleitung());
   for (const x of fehlt) {
-    hinweise.push(`Es fehlt eine ${x === "w" ? "Frauenstimme" : "Männerstimme"}. Die ${x === "w" ? "Frauen" : "Männer"} sprechen deshalb mit einer verstellten Stimme. ${ANLEITUNG}`);
+    hinweise.push(`Es fehlt eine ${x === "w" ? "Frauenstimme" : "Männerstimme"}. Die ${x === "w" ? "Frauen" : "Männer"} sprechen deshalb mit einer verstellten Stimme. ${anleitung()}`);
   }
 
   const setManuell = (id, aenderung) => {
@@ -127,7 +136,7 @@ export async function zeigeStimmen(root, app) {
           neuZeichnen();
         },
       }, "Alles zurücksetzen"),
-      h("p.klein", "Gesperrter Bildschirm: iOS hält die Sprachausgabe an, wenn das iPhone gesperrt wird. Während der Hörprobe hält die App den Bildschirm wach."),
-      h("p.klein", ANLEITUNG)),
+      h("p.klein", "Gesperrter Bildschirm: iPhone und Android halten die Sprachausgabe an, wenn das Gerät gesperrt wird. Während der Hörprobe hält die App den Bildschirm wach."),
+      h("p.klein", anleitung())),
   ));
 }

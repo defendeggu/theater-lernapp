@@ -1,7 +1,7 @@
 # EVB Text-Lern
 
 Lern-App für das Ensemble der Eibeler Volksbühne: Wähle deine Rolle in «S'Füür vom Schmied» und lerne
-deinen Text mit Karteikarten, Sprachausgabe und Hörproben – auf dem iPhone, auch unterwegs.
+deinen Text mit Karteikarten, Sprachausgabe und Hörproben – auf dem iPhone oder Android-Handy, auch unterwegs.
 
 **App öffnen:** <https://defendeggu.github.io/theater-lernapp/>
 
@@ -14,13 +14,17 @@ deinen Text mit Karteikarten, Sprachausgabe und Hörproben – auf dem iPhone, a
 
 ### Erste Schritte
 
-1. **Öffnen:** Den Link oben auf dem iPhone in **Safari** öffnen.
+1. **Öffnen:** Den Link oben öffnen – auf dem iPhone in **Safari**, auf Android in **Chrome**.
 2. **Passwort:** Das Ensemble-Passwort eingeben. Du bekommst es von der Regie.
    Die App merkt es sich auf deinem Gerät. Du musst es nur einmal eingeben.
 3. **Rolle wählen:** Tippe auf deine Rolle. Du kannst sie später in den Einstellungen wechseln.
    Wenn du mehrere Rollen lernst, bleibt der Lernstand jeder Rolle erhalten.
-4. **Auf den Home-Bildschirm legen** (wichtig!): In Safari unten auf **Teilen** tippen →
-   **«Zum Home-Bildschirm»**. Danach öffnest du die App über das Symbol wie eine normale App.
+4. **Auf den Home-Bildschirm legen** (wichtig!):
+   - **iPhone:** In Safari unten auf **Teilen** tippen → **«Zum Home-Bildschirm»**.
+   - **Android:** In Chrome oben rechts auf **⋮** tippen → **«App installieren»** oder
+     **«Zum Startbildschirm hinzufügen»**.
+
+   Danach öffnest du die App über das Symbol (Amboss mit Funken) wie eine normale App.
 
 > **Warum der Home-Bildschirm wichtig ist:** Safari löscht Daten von Webseiten, die 7 Tage
 > nicht benutzt wurden. Als App auf dem Home-Bildschirm gilt das nicht. Sichere trotzdem ab
@@ -84,6 +88,12 @@ Luzerner Dialekt – eine hochdeutsche Stimme liest den Dialekt etwas holprig, a
 je eine **Frauenstimme** (z.B. Anna) und eine **Männerstimme** (z.B. Markus oder Yannick) laden,
 am besten die Variante **«Erweitert»**. Danach die App neu öffnen.
 
+**Android:** *Einstellungen → System (oder Bedienungshilfen) → Sprachen → Text-in-Sprache-Ausgabe* →
+bevorzugtes Modul **«Sprachausgabe von Google»** → Zahnrad → **Sprachdaten installieren** →
+**Deutsch (Deutschland)**. Danach Chrome ganz schliessen und die App neu öffnen. Android verrät oft
+nicht, ob eine Stimme weiblich oder männlich ist – ordne die Stimmen dann unter
+*Einstellungen → Stimmen → Stimmen zuordnen* als «Frau» oder «Mann» zu.
+
 Fehlt eine Stimme, verstellt die App die vorhandene und zeigt einen Hinweis.
 Unter **Einstellungen → Stimmen** kannst du:
 
@@ -92,8 +102,8 @@ Unter **Einstellungen → Stimmen** kannst du:
 - **automatisches Vorlesen** einschalten: Stichwort vorlesen → Pause zum Sprechen → Karte dreht
   sich von selbst um (auch über «🔈 Auto» oben auf der Karte).
 
-**Gesperrter Bildschirm:** iOS hält die Sprachausgabe an, wenn das iPhone gesperrt wird oder
-Safari in den Hintergrund geht. Während einer Hörprobe hält die App den Bildschirm deshalb wach.
+**Gesperrter Bildschirm:** iPhone und Android halten die Sprachausgabe an, wenn das Gerät gesperrt
+wird oder der Browser in den Hintergrund geht. Während einer Hörprobe hält die App den Bildschirm deshalb wach.
 Mit Kopfhörern: iPhone entsperrt lassen und z.B. in die Tasche stecken.
 
 ### Lernstand sichern
@@ -112,8 +122,10 @@ Beim Laden wird zusammengeführt – pro Karte gilt der neuere Stand.
   ihren Stand.
 - **Ich sehe noch die alte Version.** Die App schliessen und neu öffnen (eventuell ein paar Minuten warten).
 - **Ich habe zwei Rollen.** Rolle in den Einstellungen wechseln; jede Rolle hat ihren eigenen Lernstand.
-- **Funktioniert es auch auf Android oder am Computer?** Ja, in einem aktuellen Browser.
-  Getestet wird aber in erster Linie auf dem iPhone.
+- **Funktioniert es auch auf Android?** Ja, in einem aktuellen **Chrome** (auch Samsung Internet
+  und Firefox). Installieren über ⋮ → «App installieren». Stimmen siehe oben.
+- **Und am Computer?** Ja, in einem aktuellen Browser (Chrome, Edge, Safari, Firefox).
+  Tastatur: Leertaste = umdrehen, 1/2/3 = Ampel, ←/→ = blättern, V = vorlesen.
 
 ---
 
@@ -204,7 +216,7 @@ Tests verwenden nur erfundene Figuren und Sätze (`test/fixtures/demo.mjs`), nie
 
 | Ordner | Inhalt |
 |---|---|
-| `tools/` | Parser, Review, Verschlüsselung, Klartext-Prüfung |
+| `tools/` | Parser, Review, Verschlüsselung, Klartext-Prüfung, `make_icons.py` (App-Icons) |
 | `public/` | die App (wird auf GitHub Pages veröffentlicht) |
 | `public/js/` | `cards.js` Karten · `leitner.js` Lernkartei/Phasen · `hilfe.js` Hilfestufen · `voices.js`/`speech.js` Stimmen · `store.js` Speicher · `crypto.js` Entschlüsselung · `views/` Ansichten |
 | `test/` | `node --test` und `pytest` |
@@ -218,6 +230,7 @@ Tests verwenden nur erfundene Figuren und Sätze (`test/fixtures/demo.mjs`), nie
 | M1 | App-Gerüst, Passwort, Rollenwahl, Karten | ✅ |
 | M2 | Lernkartei mit Phasen, Modi, Hilfestufen, Statistik, Sicherung | ✅ |
 | M3 | Sprachausgabe mit Frauen-/Männerstimmen, Hörprobe | ✅ |
+| – | App-Icon, Manifest (Android installierbar) | ✅ |
 | M4 | Ablauf-Ansicht, «Mein Weg», Ablauf-Quiz | offen |
 | M5 | Badges, Offline-App (PWA), Feinschliff | offen |
 
