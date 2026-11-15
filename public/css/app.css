@@ -160,13 +160,16 @@ button { font: inherit; color: inherit; }
 .inhalt { padding: 16px 18px 20px; }
 .szenenkopf { margin: 0 0 12px; padding: 8px 10px; border-radius: 10px; background: var(--flaeche-2); font-size: .85em; color: var(--text-2); }
 .label { margin: 0; font-size: .8em; text-transform: uppercase; letter-spacing: .06em; color: var(--text-2); }
-.sprecher { margin: 0 0 6px; font-weight: 700; font-size: 1.05em; }
-.stichwort-text { margin: 0 0 12px; font-size: 1.1em; line-height: 1.5; }
-.stichwort-text strong { font-weight: 750; }
+.stichwort { margin: 4px 0 12px; font-size: 1.2em; line-height: 1.45; }
+.stichwort .sprecher { font-weight: 750; }
+.stichwort.anfang { color: var(--text-2); font-style: italic; }
 .eigener-text p { margin: 6px 0 12px; font-size: 1.15em; line-height: 1.55; }
 .regie { color: var(--regie); font-style: italic; font-size: .9em; }
 .hinweis.gemeinsam { display: inline-block; margin: 6px 0; padding: 4px 10px; border-radius: 99px; background: var(--flaeche-2); font-size: .85em; }
-.zuletzt { font-size: .8em; color: var(--text-2); margin: 8px 0 0; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; margin-top: 12px; }
+.fach { font-size: .75em; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--flaeche-2); color: var(--text-2); }
+.fach.neu { background: var(--akt); color: var(--akt-text); }
+.zuletzt { font-size: .8em; color: var(--text-2); margin: 0; }
 .zuletzt::before { content: "●"; margin-right: 6px; }
 .zuletzt[data-wert="rot"]::before { color: var(--rot); }
 .zuletzt[data-wert="gelb"]::before { color: var(--gelb); }
@@ -213,3 +216,73 @@ button { font: inherit; color: inherit; }
   .karte, .fortschritt span { transition: none; }
   .rein-rechts, .rein-links, .spinner { animation: none; }
 }
+
+/* --- M2: Hilfestufen --- */
+.hilfe-wahl { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin: -4px 0 12px; padding: 3px; border-radius: 12px; background: var(--flaeche-2); }
+.hilfe-knopf { border: 0; background: none; padding: 8px 2px; border-radius: 9px; font-size: .8em; font-weight: 600; color: var(--text-2); cursor: pointer; min-height: 36px; }
+.hilfe-knopf.aktiv { background: var(--flaeche); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+.hilfe-text { margin-top: 10px; padding: 10px 12px; border-radius: 10px; border: 1px dashed var(--linie); color: var(--text-2); }
+.hilfe-text p { margin: 4px 0; line-height: 1.7; }
+.hilfe-text.anfang p { letter-spacing: .08em; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: .95em; }
+.hilfe-text.ganz { color: var(--text); border-style: solid; }
+.hilfe-text.ganz .eigener-text p { font-size: 1em; }
+.luecke { display: inline-block; height: 1em; vertical-align: -.15em; border-bottom: 2px solid var(--text-2); margin: 0 .15em; }
+
+/* --- M2: Start --- */
+.phase { margin: 12px 0 4px; padding: 12px 14px; border-radius: 14px; background: var(--flaeche); border: 1px solid var(--linie); }
+.phase p { margin: 0; }
+.phase-name { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.countdown { font-size: .95em; }
+.phase .klein { margin-top: 4px; }
+.serie { font-size: .85em; color: var(--text-2); }
+.akt-ringe { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0 4px; }
+.akt-ring { display: grid; justify-items: center; gap: 4px; text-decoration: none; font-size: .85em; color: var(--text-2); }
+.akt-ring .ring {
+  width: 72px; height: 72px; border-radius: 50%; display: grid; place-items: center;
+  background: conic-gradient(var(--akt) calc(var(--p) * 1%), var(--flaeche-2) 0);
+}
+.akt-ring .ring b { width: 54px; height: 54px; border-radius: 50%; background: var(--bg); display: grid; place-items: center; color: var(--text); font-size: .95em; }
+.kacheln { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.kachel { display: grid; gap: 2px; padding: 12px; border-radius: 14px; background: var(--flaeche); border: 1px solid var(--linie); text-decoration: none; min-height: 72px; }
+.kachel span { font-size: .8em; color: var(--text-2); }
+.kachel[aria-disabled="true"] { opacity: .55; }
+.akt-knopf { background: var(--akt); color: var(--akt-text); border-color: transparent; margin-bottom: 8px; }
+
+/* --- M2: Ende einer Runde --- */
+.ergebnis { list-style: none; padding: 0; display: flex; justify-content: center; gap: 16px; margin: 4px 0 12px; }
+.ergebnis li::before { content: "● "; }
+.ergebnis [data-wert="rot"]::before { color: var(--rot); }
+.ergebnis [data-wert="gelb"]::before { color: var(--gelb); }
+.ergebnis [data-wert="gruen"]::before { color: var(--gruen); }
+
+/* --- M2: Statistik --- */
+.zahlen { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0; }
+.zahlen div { padding: 10px; border-radius: 12px; background: var(--flaeche); border: 1px solid var(--linie); }
+.zahlen dt { font-size: .72em; color: var(--text-2); }
+.zahlen dd { margin: 0; font-size: 1.25em; font-weight: 700; }
+.faecher { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; text-align: center; }
+.faecher div { display: grid; padding: 8px 2px; border-radius: 10px; background: var(--flaeche); border: 1px solid var(--linie); }
+.faecher span { font-size: .72em; color: var(--text-2); }
+.balken { display: flex; height: 12px; border-radius: 6px; overflow: hidden; background: var(--flaeche-2); gap: 2px; }
+.balken span, .legende span::before { background: var(--linie); }
+.balken .f12, .legende .f12::before { background: var(--rot); }
+.balken .f34, .legende .f34::before { background: var(--gelb); }
+.balken .f5, .legende .f5::before { background: var(--gruen); }
+.legende { display: flex; flex-wrap: wrap; gap: 12px; font-size: .78em; color: var(--text-2); }
+.legende span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+.akt-stat h2 { display: flex; justify-content: space-between; align-items: center; }
+.akt-stat .prozent { font-size: .8em; color: var(--text-2); font-weight: 400; }
+.szenen-stat { list-style: none; padding: 0; margin: 10px 0; display: grid; gap: 10px; }
+.szenen-stat a { display: flex; justify-content: space-between; text-decoration: none; font-size: .9em; margin-bottom: 3px; }
+.szenen-stat .n { color: var(--text-2); font-size: .85em; }
+
+/* --- M2: Einstellungen --- */
+.datum { display: grid; gap: 4px; margin: 10px 0; }
+.datum span { font-weight: 600; }
+.datum input { font: inherit; font-size: max(16px, 1em); padding: 10px 12px; border-radius: 12px; border: 1px solid var(--linie); background: var(--flaeche); color: var(--text); }
+.knopfreihe { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.knopfreihe .knopf { flex: 1 1 140px; }
+.meldung.ok { color: var(--gruen); min-height: 0; margin: 0; }
+.meldung.ok:empty { display: none; }
+.meldung.ok:not(:empty) { padding: 10px 12px; border-radius: 12px; background: var(--flaeche); border: 1px solid var(--linie); margin: 8px 0; }
+.meldung.fehler { color: var(--rot); }

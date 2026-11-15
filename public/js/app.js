@@ -8,6 +8,9 @@ import { zeigeRollenwahl } from "./views/rolle.js";
 import { zeigeStart } from "./views/start.js";
 import { zeigeKarten } from "./views/karte.js";
 import { zeigeEinstellungen } from "./views/einstellungen.js";
+import { zeigeZufall } from "./views/zufall.js";
+import { zeigeStatistik } from "./views/statistik.js";
+import { STANDARD_TERMINE } from "./leitner.js";
 
 const DATEN_URL = "data/stueck.enc";
 const SCHLUESSEL = "schluessel";
@@ -20,6 +23,9 @@ export const app = {
   get rolle() { return lsGet("rolle"); },
   set rolle(id) { lsSet("rolle", id); },
   rolleFigur() { return this.rolle ? figur(this.stueck, this.rolle) : null; },
+  termine() {
+    return { textfest: lsGet("textfest", STANDARD_TERMINE.textfest), premiere: lsGet("premiere", STANDARD_TERMINE.premiere) };
+  },
   gehe(hash) { if (location.hash === hash) route(); else location.hash = hash; },
   async passwortZuruecksetzen() {
     await kvDel(SCHLUESSEL);
@@ -88,6 +94,7 @@ async function start() {
 }
 
 function bereit() {
+  persistentAnfragen();
   if (app.rolle && !app.rolleFigur()) app.rolle = null; // Rolle gibt es nicht mehr
   window.removeEventListener("hashchange", route);
   window.addEventListener("hashchange", route);
@@ -104,6 +111,8 @@ function route() {
     case "/rolle": return zeigeRollenwahl(root, app);
     case "/lernen": return zeigeKarten(root, app, params);
     case "/einstellungen": return zeigeEinstellungen(root, app);
+    case "/zufall": return zeigeZufall(root, app);
+    case "/statistik": return zeigeStatistik(root, app);
     default: return zeigeStart(root, app);
   }
 }

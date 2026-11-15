@@ -1,23 +1,29 @@
-// Kartenansicht «Chronologisch»: Vorderseite Stichwort → von Hand umdrehen →
-// Rückseite eigener Text + Selbstbewertung (Ampel).
+// Kartenansicht. Vorderseite: letzter Satz vor dem Einsatz (+ Hilfestufe) → von Hand umdrehen →
+// Rückseite: eigener Text + Selbstbewertung (Ampel). Modi: chronologisch, fällig, zufall, schwach.
 import { h, leeren, kontrastFarbe } from "../dom.js";
 import { kartenFuer, indexAbSzene, textStuecke } from "../cards.js";
-import { bewertungSetzen, bewertungenFuer, lsGet, lsSet } from "../store.js";
+import { anfangsbuchstaben, lueckentext, HILFESTUFEN } from "../hilfe.js";
+import {
+  bewerten, zustand, faelligeKarten, schwacheKarten, bereichFilter, mischen, tagKey, phase,
+} from "../leitner.js";
+import { bewertungSpeichern, fortschrittFuer, lsGet, lsSet } from "../store.js";
 
 export const AMPEL = [
-  { wert: "rot", text: "Nöd gwüsst", symbol: "●", hilfe: "Zurück an den Anfang" },
-  { wert: "gelb", text: "Fast", symbol: "●", hilfe: "Bleibt, nochmals üben" },
-  { wert: "gruen", text: "Sass", symbol: "●", hilfe: "Sitzt" },
+  { wert: "rot", text: "Nicht gewusst", hilfe: "Zurück in Fach 1, kommt bald wieder" },
+  { wert: "gelb", text: "Fast", hilfe: "Bleibt im gleichen Fach" },
+  { wert: "gruen", text: "Gewusst", hilfe: "Ein Fach weiter" },
 ];
 const AMPEL_TEXT = Object.fromEntries(AMPEL.map((a) => [a.wert, a.text]));
 
-const mitAbsaetzen = (text) => text.split("\n\n").flatMap((t, i) => (i ? [h("br"), h("br"), t] : [t]));
+export const MODI = {
+  chrono: { name: "Chronologisch" },
+  faellig: { name: "Fällige Karten" },
+  zufall: { name: "Zufall" },
+  schwach: { name: "Schwache Karten" },
+};
 
-function stichwortText(sw) {
-  const vor = sw.text.slice(0, sw.fettAb);
-  const fett = sw.text.slice(sw.fettAb);
-  return h("p.stichwort-text", mitAbsaetzen(vor), h("strong", mitAbsaetzen(fett)));
-}
+const WIEDERHOLEN_NACH = 4; // "Nicht gewusst" kommt in der gleichen Sitzung nach 4 Karten nochmals
+const MAX_WIEDERHOLUNG = 2;
 
 function eigenerText(k) {
   const absaetze = [[]];
@@ -29,61 +35,117 @@ function eigenerText(k) {
   return h("div.eigener-text", absaetze.filter((a) => a.length).map((a) => h("p", a)));
 }
 
+function hilfeText(k, stufe) {
+  if (stufe === 1) return h("div.hilfe-text.anfang", anfangsbuchstaben(k.text).split("\n\n").map((p) => h("p", p)));
+  if (stufe === 2) {
+    const absaetze = [[]];
+    for (const s of lueckentext(k.text)) {
+      if (s.typ === "absatz") absaetze.push([]);
+      else if (s.typ === "luecke") absaetze[absaetze.length - 1].push(
+        h("span.luecke", { style: { width: `${Math.max(2, s.text.length) * 0.55}em` }, "aria-label": "Lücke" }));
+      else absaetze[absaetze.length - 1].push(s.text);
+    }
+    return h("div.hilfe-text", absaetze.map((a) => h("p", a)));
+  }
+  if (stufe === 3) return h("div.hilfe-text.ganz", eigenerText(k));
+  return null;
+}
+
+/** Warteschlange für die Sitzung nach Modus. */
+function sitzung(modus, params, karten, fortschritt, heute) {
+  const neuProTag = lsGet("neuProTag", 20);
+  switch (modus) {
+    case "faellig": return faelligeKarten(karten, fortschritt, heute, { neuProTag });
+    case "schwach": return schwacheKarten(karten, fortschritt, heute);
+    case "zufall": return mischen(bereichFilter(karten, params.get("bereich") ?? "stueck"));
+    default: return karten;
+  }
+}
+
 export async function zeigeKarten(root, app, params) {
   const rolle = app.rolle;
   const f = app.rolleFigur();
-  const karten = kartenFuer(app.stueck, rolle);
-  let bewertungen = new Map();
-  try { bewertungen = await bewertungenFuer(rolle); } catch { /* ohne IndexedDB weiter */ }
+  const modus = MODI[params.get("modus")] ? params.get("modus") : "chrono";
+  const alleKarten = kartenFuer(app.stueck, rolle);
+  const heute = tagKey();
+  const ph = phase(heute, app.termine());
+  let fortschritt = new Map();
+  try { fortschritt = await fortschrittFuer(rolle); } catch { /* ohne IndexedDB weiter */ }
+
+  const queue = sitzung(modus, params, alleKarten, fortschritt, heute).slice();
+  const wiederholt = new Map();
+  const ergebnis = { rot: 0, gelb: 0, gruen: 0 };
+  let hilfe = lsGet("hilfe", 0);
 
   let i = 0;
-  if (params.get("karte")) i = Math.max(0, karten.findIndex((k) => k.id === params.get("karte")));
-  else if (params.get("ab")) i = indexAbSzene(karten, params.get("ab"));
+  if (modus === "chrono") {
+    if (params.get("karte")) i = Math.max(0, queue.findIndex((k) => k.id === params.get("karte")));
+    else if (params.get("ab")) i = indexAbSzene(queue, params.get("ab"));
+  }
   let gedreht = false;
 
   const seite = h("section.karten-seite");
   leeren(root).append(seite);
-
   const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
+  if (!queue.length) {
+    const leer = {
+      faellig: ["Heute ist nichts fällig", "Alle fälligen Karten sind erledigt. Morgen geht es weiter – oder lerne chronologisch oder im Zufallsmodus."],
+      schwach: ["Keine schwachen Karten", "Keine Karte liegt in Fach 1 oder 2. Gut gemacht!"],
+    }[modus] ?? ["Keine Karten", "In diesem Bereich gibt es keine Karten für deine Rolle."];
+    leeren(seite).append(h("div.seite.mitte.fertig",
+      h("h1", leer[0]), h("p", leer[1]), h("a.knopf.primaer.gross", { href: "#/" }, "Zur Übersicht")));
+    return;
+  }
+
   function ende() {
-    lsSet(`pos.${rolle}`, null);
+    if (modus === "chrono") lsSet(`pos.${rolle}`, null);
+    const n = ergebnis.rot + ergebnis.gelb + ergebnis.gruen;
     leeren(seite).append(h("div.seite.mitte.fertig",
       h("div.funken", { "aria-hidden": "true" }, "✦ ✦ ✦"),
       h("h1", "Geschafft!"),
-      h("p", `Du bist alle ${karten.length} Karten von ${f.kurz} bis zum Schluss durchgegangen.`),
+      h("p", modus === "chrono"
+        ? `Du bist alle Karten von ${f.kurz} bis zum Schluss durchgegangen.`
+        : `${MODI[modus].name}: ${n} Bewertungen in dieser Runde.`),
+      n > 0 && h("ul.ergebnis",
+        AMPEL.map((a) => h("li", { "data-wert": a.wert }, h("b", String(ergebnis[a.wert])), " ", a.text))),
       h("a.knopf.primaer.gross", { href: "#/" }, "Zur Übersicht"),
-      h("button.knopf", { onclick() { i = 0; zeichnen(); } }, "Nochmals von vorne")));
+      modus === "chrono" && h("button.knopf", { onclick() { i = 0; zeichnen(); } }, "Nochmals von vorne")));
   }
 
   function zeichnen(richtung = 0) {
-    if (i >= karten.length) return ende();
-    const k = karten[i];
-    lsSet(`pos.${rolle}`, k.id);
-    const vorher = bewertungen.get(k.id);
-    const vorherGilt = vorher && vorher.hash === k.hash;
-    const aktText = kontrastFarbe(k.farbe);
+    if (i >= queue.length) return ende();
+    const k = queue[i];
+    if (modus === "chrono") lsSet(`pos.${rolle}`, k.id);
+    const z = zustand(k, fortschritt.get(k.id), heute);
+    const e = fortschritt.get(k.id);
     seite.style.setProperty("--akt", k.farbe);
-    seite.style.setProperty("--akt-text", aktText);
+    seite.style.setProperty("--akt-text", kontrastFarbe(k.farbe));
 
     const gemeinsam = k.gemeinsamMit.length
       ? h("p.hinweis.gemeinsam", `Gemeinsam mit ${k.gemeinsamMit.join(", ")}${k.sammel ? ` («${k.sammel}»)` : ""}`)
       : null;
-    const teil = k.teil ? h("span.teil", `Teil ${k.teil.nr} von ${k.teil.von}`) : (
-      karten[i - 1]?.replikId === k.replikId ? h("span.teil", "Ganze Replik") : null);
+    const teil = k.teil ? h("span.teil", `Teil ${k.teil.nr} von ${k.teil.von}`)
+      : (alleKarten.some((x) => x.replikId === k.replikId && x.teil) ? h("span.teil", "Ganze Replik") : null);
+    const fach = z.neu ? h("span.fach.neu", "Neu") : h("span.fach", { title: "Fach in der Lernkartei" },
+      z.geaendert ? "Text geändert" : `Fach ${z.fach}`);
+
+    const stichwortZeile = k.stichwort
+      ? h("p.stichwort",
+          h("b.sprecher", k.stichwort.eigen ? (k.teil ? "Du (vorheriger Abschnitt): " : "Du (vorher): ") : `${k.stichwort.sprecher}: `),
+          h("span", k.stichwort.text))
+      : h("p.stichwort.anfang", "Du beginnst die Szene.");
 
     const vorne = h("div.kartenseite.vorne", { "aria-hidden": gedreht ? "true" : "false" },
       h("div.band", h("span", `Akt ${k.akt} · Szene ${k.szene} · ${k.ort}`), teil),
       h("div.inhalt",
         k.kopf && h("p.szenenkopf", k.kopf),
-        k.stichwort
-          ? [h("p.label", k.stichwort.eigen ? "Du davor:" : "Stichwort von"),
-             h("p.sprecher", k.stichwort.eigen ? (k.teil ? "dein vorheriger Abschnitt" : `${f.kurz} (du)`) : `${k.stichwort.sprecher}:`),
-             stichwortText(k.stichwort)]
-          : h("p.label", "Du beginnst die Szene."),
+        stichwortZeile,
         gemeinsam,
-        vorherGilt && h("p.zuletzt", { "data-wert": vorher.wert }, `Zuletzt: ${AMPEL_TEXT[vorher.wert]}`),
-        h("p.tipp", "Sprich deinen Text – dann umdrehen.")));
+        hilfeText(k, hilfe),
+        h("div.meta", fach,
+          !z.neu && !z.geaendert && e && h("span.zuletzt", { "data-wert": e.wert }, `Zuletzt: ${AMPEL_TEXT[e.wert]}`)),
+        h("p.tipp", hilfe === 3 ? "Lies deinen Text – dann umdrehen und bewerten." : "Sprich deinen Text – dann umdrehen.")));
 
     const hinten = h("div.kartenseite.hinten", { "aria-hidden": gedreht ? "false" : "true" },
       h("div.band", h("span", `${f.kurz} · Szene ${k.szene}`), teil?.cloneNode(true)),
@@ -94,26 +156,29 @@ export async function zeigeKarten(root, app, params) {
         h("p.tipp", "Wie gut konntest du es?")));
 
     const karte = h("div.karte", {
-      class: "karte" + (gedreht ? " gedreht" : ""),
-      role: "button", tabindex: "0",
+      class: "karte" + (gedreht ? " gedreht" : ""), role: "button", tabindex: "0",
       "aria-label": gedreht ? "Karte zeigt deinen Text. Tippen zum Zurückdrehen." : "Karte zeigt das Stichwort. Tippen zum Umdrehen.",
-      onclick: drehen,
+      onclick(ev) { if (!ev.target.closest(".hilfe-wahl")) drehen(); },
     }, vorne, hinten);
 
     const buehne = h("div.buehne", karte);
     if (richtung && !reducedMotion) buehne.classList.add(richtung > 0 ? "rein-rechts" : "rein-links");
     wischen(buehne);
 
-    const fortschritt = h("div.fortschritt", { role: "progressbar", "aria-valuemin": "0", "aria-valuemax": karten.length, "aria-valuenow": i + 1 },
-      h("span", { style: { width: `${((i + 1) / karten.length) * 100}%` } }));
+    const hilfeWahl = h("div.hilfe-wahl", { role: "radiogroup", "aria-label": "Hilfestufe" },
+      HILFESTUFEN.map((s) => h("button", {
+        class: "hilfe-knopf" + (s.id === hilfe ? " aktiv" : ""), role: "radio",
+        "aria-checked": s.id === hilfe ? "true" : "false", title: s.name,
+        onclick() { hilfe = s.id; lsSet("hilfe", hilfe); zeichnen(); },
+      }, s.kurz)));
 
     const aktionen = gedreht
       ? h("footer.aktionen.ampel",
-          h("div.ampel-reihe", AMPEL.map((a, n) => h("button.knopf.ampel-knopf", {
+          h("div.ampel-reihe", AMPEL.map((a, n) => h("button", {
             class: `knopf ampel-knopf ${a.wert}`, "data-wert": a.wert, title: `${a.hilfe} (Taste ${n + 1})`,
-            onclick(ev) { ev.stopPropagation(); bewerten(a.wert); },
-          }, h("span.punkt", { "aria-hidden": "true" }, a.symbol), h("span", a.text)))),
-          h("button.link", { onclick: drehen }, "↺ Stichwort nochmals ansehen"))
+            onclick(ev) { ev.stopPropagation(); bewerte(a.wert); },
+          }, h("span.punkt", { "aria-hidden": "true" }, "●"), h("span", a.text)))),
+          h("button.link", { onclick: drehen }, "↺ Vorderseite nochmals ansehen"))
       : h("footer.aktionen",
           h("button.knopf.rund", { onclick: () => gehe(-1), disabled: i === 0, "aria-label": "Vorherige Karte" }, "‹"),
           h("button.knopf.primaer.gross.umdrehen", { onclick: drehen }, "Umdrehen"),
@@ -122,9 +187,12 @@ export async function zeigeKarten(root, app, params) {
     leeren(seite).append(
       h("header.kartenkopf",
         h("a.zurueck", { href: "#/", "aria-label": "Zur Übersicht" }, "‹"),
-        h("div.titel", h("b", `Akt ${k.akt} · Szene ${k.szene}`), h("span", k.ort)),
-        h("span.zaehler", `${i + 1} / ${karten.length}`)),
-      fortschritt, buehne, aktionen);
+        h("div.titel", h("b", MODI[modus].name), h("span", `Akt ${k.akt} · Szene ${k.szene} · ${ph.name}`)),
+        h("span.zaehler", `${i + 1} / ${queue.length}`)),
+      h("div.fortschritt", { role: "progressbar", "aria-valuemin": "0", "aria-valuemax": queue.length, "aria-valuenow": i + 1 },
+        h("span", { style: { width: `${((i + 1) / queue.length) * 100}%` } })),
+      ...(gedreht ? [] : [hilfeWahl]),
+      buehne, aktionen);
   }
 
   function drehen() {
@@ -140,17 +208,26 @@ export async function zeigeKarten(root, app, params) {
   }
 
   function gehe(d) {
-    const neu = Math.min(Math.max(i + d, 0), karten.length);
+    const neu = Math.min(Math.max(i + d, 0), queue.length);
     if (neu === i) return;
     i = neu;
     gedreht = false;
     zeichnen(d);
   }
 
-  async function bewerten(wert) {
-    const k = karten[i];
-    bewertungen.set(k.id, { wert, hash: k.hash, zeit: Date.now() });
-    try { await bewertungSetzen(rolle, k.id, wert, k.hash); } catch { /* Speicher voll/gesperrt */ }
+  async function bewerte(wert) {
+    const k = queue[i];
+    const eintrag = bewerten(fortschritt.get(k.id), k, wert, { heute, phase: ph, hilfe });
+    fortschritt.set(k.id, eintrag);
+    ergebnis[wert]++;
+    // Fach 1 = gleiche Sitzung: "Nicht gewusst" kommt in dieser Runde nochmals (nicht chronologisch)
+    if (modus !== "chrono" && eintrag.fach === 1 && (wiederholt.get(k.id) ?? 0) < MAX_WIEDERHOLUNG) {
+      wiederholt.set(k.id, (wiederholt.get(k.id) ?? 0) + 1);
+      queue.splice(Math.min(i + 1 + WIEDERHOLEN_NACH, queue.length), 0, k);
+    }
+    try {
+      await bewertungSpeichern(rolle, eintrag, heute, { karte: k.id, modus, zeit: Date.now() });
+    } catch { /* Speicher gesperrt: Sitzung läuft trotzdem weiter */ }
     gehe(1);
   }
 
@@ -162,20 +239,20 @@ export async function zeigeKarten(root, app, params) {
       const dx = e.changedTouches[0].clientX - x0;
       const dy = e.changedTouches[0].clientY - y0;
       x0 = null;
-      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-        e.preventDefault();
-        gehe(dx < 0 ? 1 : -1);
-      }
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) { e.preventDefault(); gehe(dx < 0 ? 1 : -1); }
     });
   }
 
   const taste = (e) => {
     if (!document.body.contains(seite)) return document.removeEventListener("keydown", taste);
     if (e.target.closest?.("input, textarea, select")) return;
-    if (e.key === " " || e.key === "Enter") { e.preventDefault(); drehen(); }
+    if (e.key === " " || e.key === "Enter") {
+      if (e.target.closest?.("button, a")) return; // Knöpfe selbst auslösen lassen
+      e.preventDefault(); drehen();
+    }
     else if (e.key === "ArrowRight") gehe(1);
     else if (e.key === "ArrowLeft") gehe(-1);
-    else if (gedreht && ["1", "2", "3"].includes(e.key)) bewerten(AMPEL[Number(e.key) - 1].wert);
+    else if (gedreht && ["1", "2", "3"].includes(e.key)) bewerte(AMPEL[Number(e.key) - 1].wert);
   };
   document.addEventListener("keydown", taste);
 

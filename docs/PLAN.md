@@ -149,7 +149,7 @@ theater-lernapp/
 ### Karten bauen (in der App, für die gewählte Rolle)
 
 - Für **jede Replik**, bei der die gewählte Figur unter den Sprechern ist, entsteht eine Karte – auch bei Sammelrepliken (mit Hinweis «gemeinsam mit …»).
-- **Stichwort** = die letzte Replik einer anderen Figur davor (ganzer Text, der **letzte Satz fett**). Sprecher wird angezeigt («Joe:»).
+- **Stichwort** = der **letzte Satz** der Replik direkt vor dem eigenen Einsatz, in einer Zeile mit dem Sprecher (z.B. «Erzähler: und dann betrat sie die Bühne»). Nur dieser Satz steht auf der Karte; der ganze Text der Replik bleibt in den Daten (z.B. für die Sprachausgabe).
 - Spricht die Figur zweimal hintereinander (nur Regieanweisung dazwischen), ist ihre eigene vorherige Zeile das Stichwort.
 - **Erste Replik in einer Szene:** Stichwort ist der Szenenkopf («Szene 2.11 – Lager der Zigeuner – mit Joe») und, falls vorhanden, die letzte Replik vor ihrem Einsatz in der Szene.
 - **Lange Repliken** (mehr als ca. 60 Wörter) werden zusätzlich in Abschnitte geteilt (nach Absätzen im Textbuch). Jeder Abschnitt ist eine eigene Teilkarte mit dem vorherigen Abschnitt als Stichwort. Betrifft vor allem den Erzähler und Joe.
@@ -196,7 +196,7 @@ Stichwort wird vorgelesen → Pause (Länge passt sich an die Länge der eigenen
 - Lückentext (jedes 3. Wort fehlt)
 - ganzer Text
 
-**Bewertung (Ampel):** Nach dem Umdrehen der Karte drei Knöpfe – 🔴 «Nöd gwüsst» (zurück in Fach 1), 🟡 «Fast» (Fach bleibt), 🟢 «Sass» (Fach +1). Farbe immer zusammen mit Text (Farbschwäche). Intervalle: Fach 1 = gleiche Sitzung, 2 = 1 Tag, 3 = 3 Tage, 4 = 7 Tage, 5 = 14 Tage.
+**Bewertung (Ampel):** Nach dem Umdrehen der Karte drei Knöpfe – 🔴 «Nicht gewusst» (zurück in Fach 1), 🟡 «Fast» (Fach bleibt), 🟢 «Gewusst» (Fach +1). Farbe immer zusammen mit Text (Farbschwäche). Intervalle: Fach 1 = gleiche Sitzung, 2 = 1 Tag, 3 = 3 Tage, 4 = 7 Tage, 5 = 14 Tage.
 
 **Zwei Termine:** Die Regie verlangt, dass alle ihren Text **Anfang Dezember 2027 auswendig** können und ab dann ohne Textbuch an die wöchentliche Probe kommen («Textfest»). Die **Premiere** ist Ende April 2028. Massgebend fürs Lernen ist das Textfest-Datum. Beide Daten sind in den Einstellungen anpassbar (Standard: Textfest 01.12.2027, Premiere 30.04.2028). Die Phasen richten sich nach dem Textfest:
 - **Kennenlernen** (bis 6 Monate vor dem Textfest, also bis ca. Juni 2027): normale Intervalle, Fokus auf Ablauf und chronologisches Lesen
@@ -245,9 +245,9 @@ Dazu: kleine Animation (Funken in Aktfarbe) beim neuen Badge, Tages-Serie und Fo
 ## 8. Oberfläche (iPhone zuerst)
 
 - **Start:** «Du spielst: Alina», Countdown zum Textfest (danach zur Premiere) mit Phase, drei Fortschrittsringe (Akt 1–3), Knopf «Heute lernen (23 fällig)», Kacheln für die Modi, Serie, neuestes Badge.
-- **Karte:** oben Akt-Farbband mit «Akt 2 · Szene 2.11 · Lager»; Vorderseite = Stichwort mit Sprecher und Knopf ▶︎ (vorlesen). Nachdem man das Stichwort gelesen oder gehört und den eigenen Text gesprochen hat, wird die Karte **von Hand umgedreht** (grosser Knopf «Umdrehen» oder Tippen auf die Karte, mit Dreh-Animation, `prefers-reduced-motion` beachten). Rückseite = eigener Text (Regie grau/kursiv) und darunter die **Selbstbewertung als Ampel** (🔴 Nöd gwüsst · 🟡 Fast · 🟢 Sass). Erst nach der Bewertung geht es zur nächsten Karte; Wischen geht auch.
+- **Karte:** oben Akt-Farbband mit «Akt 2 · Szene 2.11 · Lager»; Vorderseite = Stichwort mit Sprecher und Knopf ▶︎ (vorlesen). Nachdem man das Stichwort gelesen oder gehört und den eigenen Text gesprochen hat, wird die Karte **von Hand umgedreht** (grosser Knopf «Umdrehen» oder Tippen auf die Karte, mit Dreh-Animation, `prefers-reduced-motion` beachten). Rückseite = eigener Text (Regie grau/kursiv) und darunter die **Selbstbewertung als Ampel** (🔴 Nicht gewusst · 🟡 Fast · 🟢 Gewusst). Erst nach der Bewertung geht es zur nächsten Karte; Wischen geht auch.
 - Grosse Schrift (einstellbar), Dark Mode, Bedienung mit einer Hand (Knöpfe unten), `safe-area` für die iPhone-Ränder.
-- Alle Texte Deutsch, Schweizer Schreibweise. Knöpfe in Mundart sind ok («Sass», «Nöd gwüsst»).
+- Alle Texte Deutsch, Schweizer Schreibweise. Knöpfe in normalem Hochdeutsch, kein Slang («Nicht gewusst», «Fast», «Gewusst»).
 - Läuft auch auf Android und am Computer, getestet wird aber in erster Linie auf dem iPhone.
 
 ## 9. Vorgehen in Meilensteinen

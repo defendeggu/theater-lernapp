@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { kartenFuer, letzterSatzAb, abschnitte, indexAbSzene, textStuecke, LANG_WOERTER } from "../public/js/cards.js";
+import { kartenFuer, letzterSatzAb, letzterSatz, abschnitte, indexAbSzene, textStuecke, LANG_WOERTER } from "../public/js/cards.js";
 import { rollenListe, einsaetze, szenenDerRolle } from "../public/js/roles.js";
 import { demo } from "./fixtures/demo.mjs";
 
@@ -8,7 +8,12 @@ test("letzter Satz wird gefunden", () => {
   const t = "Erschte Satz. Zweite Satz! Dritte Satz?";
   assert.equal(t.slice(letzterSatzAb(t)), "Dritte Satz?");
   assert.equal(letzterSatzAb("Nume ein Satz."), 0);
-  assert.equal("Jo… und denn?".slice(letzterSatzAb("Jo… und denn?")), "und denn?");
+  assert.equal(letzterSatz("Jo… und denn?"), "und denn?");
+  assert.equal(letzterSatz("Lang her. Wage Nr. 1 isch det."), "Wage Nr. 1 isch det.");
+  assert.equal(letzterSatz("Säg em Hr. Müller grüezi."), "Säg em Hr. Müller grüezi.");
+  assert.equal(letzterSatz("Erste Absatz ohni Punkt\n\nzweite Absatz"), "zweite Absatz");
+  assert.equal(letzterSatz("Er seit: «Chumm do häre.» Und denn?"), "Und denn?");
+  assert.equal(letzterSatz("Bis zum Tag…, wo alles anders isch."), "Bis zum Tag…, wo alles anders isch.");
 });
 
 test("Rolle Mona: Karten, Stichworte, Sammelreplik", () => {
@@ -21,10 +26,11 @@ test("Rolle Mona: Karten, Stichworte, Sammelreplik", () => {
   // weitere Karte: kein Kopf, Stichwort von Ruedi, letzter Satz fett
   assert.equal(k[1].kopf, null);
   assert.equal(k[1].stichwort.sprecher, "Ruedi");
-  assert.equal(k[1].stichwort.text.slice(k[1].stichwort.fettAb), "Und du chunsch vo wiit her, gäll?");
+  assert.equal(k[1].stichwort.text, "Und du chunsch vo wiit her, gäll?");   // nur letzter Satz
+  assert.equal(k[1].stichwort.ganz, "Ech be de Müller. Und du chunsch vo wiit her, gäll?");
   // zweimal hintereinander: eigene Zeile ist Stichwort
   assert.equal(k[2].stichwort.eigen, true);
-  assert.equal(k[2].stichwort.text, "Vo sehr wiit. Mer bliibed nume zwei Wuche.");
+  assert.equal(k[2].stichwort.text, "Mer bliibed nume zwei Wuche.");
   // Sammelreplik
   assert.deepEqual(k[3].gemeinsamMit, ["Ruedi"]);
   assert.equal(k[3].sammel, "Ruedi/Mona");
@@ -60,7 +66,8 @@ test("lange Replik: Teilkarten nach Absätzen, dann ganze Replik", () => {
   assert.ok(k[0].kopf);
   assert.equal(k[1].kopf, null);
   assert.equal(k[1].stichwort.eigen, true);       // vorheriger Abschnitt ist Stichwort
-  assert.equal(k[1].stichwort.text, k[0].text);
+  assert.equal(k[1].stichwort.ganz, k[0].text);
+  assert.equal(k[1].stichwort.text, "Jede hed jede kennt.");
   assert.equal(k[0].regie[0].text, "*1");         // Regie dem richtigen Teil zugeordnet
   assert.equal(k[1].regie.length, 0);
   assert.equal(k[3].teil, null);

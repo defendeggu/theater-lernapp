@@ -5,7 +5,8 @@
 //   auch Sammelrepliken (Hinweis «gemeinsam mit …»).
 // - Stichwort = die Replik mit Text direkt davor in der Szene. Das ist normalerweise eine
 //   andere Figur; spricht die Rolle zweimal hintereinander, ist es die eigene Zeile davor.
-//   Der letzte Satz des Stichworts wird fett gezeigt.
+//   Auf der Karte steht nur der LETZTE SATZ davor (Wunsch Regie/Ensemble); der ganze
+//   Text bleibt in `ganz` (z.B. für die Sprachausgabe).
 // - Erste Karte der Rolle in einer Szene: zusätzlich der Szenenkopf.
 // - Lange Repliken (> LANG_WOERTER) mit Absätzen: zusätzlich Teilkarten pro Abschnitt,
 //   jeweils mit dem vorherigen Abschnitt als Stichwort. Reihenfolge: Teile, dann ganze Replik.
@@ -15,18 +16,27 @@ export const MIN_TEIL_WOERTER = 12;
 
 const woerter = (t) => (t.match(/\S+/g) || []).length;
 
-/** Index, ab dem der letzte Satz beginnt. */
+// Abkürzungen, nach denen kein Satz endet ("Nr. 1", "z.B.", "Hr. Suter")
+const ABK = /(?:^|[\s(])(?:Nr|Hr|Fr|St|Dr|ca|bzw|usw|etc|z\.B|d\.h|u\.a|mediz|[A-ZÄÖÜa-zäöü])\.$/;
+
+/** Index, ab dem der letzte Satz beginnt. Absätze zählen als Satzgrenze. */
 export function letzterSatzAb(text) {
   const t = text.trimEnd();
-  const re = /[.!?…]+[»"”')]*\s+/g;
+  const re = /(?:[.!?…]+[»"”')]*[ \t]+|\n\n+)/g;
   let ab = 0;
   let m;
   while ((m = re.exec(t)) !== null) {
     const ende = m.index + m[0].length;
-    if (ende < t.length) ab = ende;
+    if (ende >= t.length) continue;
+    if (/^\d/.test(t.slice(ende))) continue; // "Nr. 1"
+    if (m[0].startsWith(".") && ABK.test(t.slice(0, m.index + 1))) continue;
+    ab = ende;
   }
   return ab;
 }
+
+/** Nur der letzte Satz eines Textes. */
+export const letzterSatz = (text) => text.slice(letzterSatzAb(text)).trim();
 
 /** Teilt einen Text an Absätzen in Abschnitte mit mindestens MIN_TEIL_WOERTER Wörtern. */
 export function abschnitte(text) {
@@ -87,8 +97,8 @@ export function kartenFuer(stueck, rolle) {
         const stichwort = vorher && {
           sprecher: vorher.sammel ?? vorher.sprecher.map(name).join(", "),
           eigen: vorher.sprecher.includes(rolle),
-          text: vorher.text,
-          fettAb: letzterSatzAb(vorher.text),
+          text: letzterSatz(vorher.text),
+          ganz: vorher.text,
         };
         const andere = sz.personen.filter((p) => p !== rolle).map(name);
         const kopf = ersteInSzene || !vorher
@@ -118,7 +128,7 @@ export function kartenFuer(stueck, rolle) {
               teil: { nr: k + 1, von: teile.length },
               kopf: k === 0 ? kopf : null,
               stichwort: k === 0 ? stichwort : {
-                sprecher: name(rolle), eigen: true, text: vorTeil.text, fettAb: letzterSatzAb(vorTeil.text),
+                sprecher: name(rolle), eigen: true, text: letzterSatz(vorTeil.text), ganz: vorTeil.text,
               },
               text: t.text,
               regie: regieIn(rep.regie, t.start, t.end, k === teile.length - 1),

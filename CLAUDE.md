@@ -33,8 +33,11 @@ GitHub Pages ist öffentlich. Das Stück ist unveröffentlicht.
 - Oberfläche Deutsch mit Schweizer Schreibweise (ss statt ß). Stücktext bleibt exakt im Dialekt.
 - Aktfarben: Akt 1 Gelb `#E8B10E`, Akt 2 Orange `#E9731C`, Akt 3 Rot `#C62828`
   (auf Gelb/Orange dunkle Schrift).
-- Karte: Vorderseite Stichwort → von Hand umdrehen → Rückseite eigener Text +
-  Selbstbewertung als Ampel (🔴 Nöd gwüsst · 🟡 Fast · 🟢 Sass), immer mit Text.
+- Karte: Vorderseite = nur der letzte Satz vor dem Einsatz («Name: Satz») → von Hand umdrehen →
+  Rückseite eigener Text + Selbstbewertung als Ampel (🔴 Nicht gewusst · 🟡 Fast · 🟢 Gewusst),
+  immer mit Text, normales Hochdeutsch (kein Slang).
+- Lernziel ist das Textfest (Standard 1.12.2027), nicht die Premiere (30.4.2028): Phasen in
+  `public/js/leitner.js`.
 
 ## Ordnerstruktur
 
@@ -49,10 +52,10 @@ tools/
 public/                 wird auf GitHub Pages veröffentlicht
   index.html, manifest.webmanifest, sw.js, robots.txt
   css/app.css
-  js/ (app.js, crypto.js, store.js, roles.js, cards.js, leitner.js, speech.js,
-       voices.js, quiz.js, badges.js, views/*.js)
+  js/ (app.js, crypto.js, store.js, roles.js, cards.js, leitner.js, hilfe.js, dom.js,
+       speech.js, voices.js, quiz.js, badges.js, views/*.js)
   icons/, data/stueck.enc
-test/                   *.test.mjs (node --test), test_*.py (pytest)
+test/                   *.test.mjs (node --test), test_*.py (pytest), fixtures/demo.mjs (erfundenes Demo-Stück)
 .github/workflows/pages.yml
 ```
 
@@ -93,4 +96,4 @@ Python-Abhängigkeiten nur für die Werkzeuge: `pip install pdfplumber pytest`.
 ## Git
 
 - Autor in diesem Repo: `Adrian S. <48011232+defendeggu@users.noreply.github.com>` (lokale Config).
-- Repo ist privat bis M1; für GitHub Pages wird es öffentlich (Deploy-Job läuft nur dann).
+- Repo ist öffentlich, GitHub Pages deployt bei jedem Push auf `main`. Direkt auf `main` arbeiten.
