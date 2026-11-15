@@ -96,6 +96,7 @@ export function kartenFuer(stueck, rolle) {
         }
         const stichwort = vorher && {
           sprecher: vorher.sammel ?? vorher.sprecher.map(name).join(", "),
+          sprecherIds: vorher.sprecher,
           eigen: vorher.sprecher.includes(rolle),
           text: letzterSatz(vorher.text),
           ganz: vorher.text,
@@ -128,7 +129,7 @@ export function kartenFuer(stueck, rolle) {
               teil: { nr: k + 1, von: teile.length },
               kopf: k === 0 ? kopf : null,
               stichwort: k === 0 ? stichwort : {
-                sprecher: name(rolle), eigen: true, text: letzterSatz(vorTeil.text), ganz: vorTeil.text,
+                sprecher: name(rolle), sprecherIds: [rolle], eigen: true, text: letzterSatz(vorTeil.text), ganz: vorTeil.text,
               },
               text: t.text,
               regie: regieIn(rep.regie, t.start, t.end, k === teile.length - 1),

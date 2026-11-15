@@ -68,7 +68,7 @@ export async function fortschrittFuer(rolle) {
 }
 
 export function leereRolle(rolle) {
-  return { rolle, tage: {}, zuletzt: null, quiz: [], badges: {} };
+  return { rolle, tage: {}, zuletzt: null, quiz: [], badges: {}, hoerproben: 0 };
 }
 
 export async function rolleLaden(rolle) {
@@ -84,6 +84,18 @@ export function bewertungSpeichern(rolle, eintrag, heute, zuletzt) {
       const r = e.target.result ?? leereRolle(rolle);
       r.tage[heute] = (r.tage[heute] ?? 0) + 1;
       r.zuletzt = zuletzt;
+      rs.put(r);
+    };
+  });
+}
+
+/** Rollen-Daten ändern, z.B. Zähler für Hörproben: rolleAktualisieren(id, (r) => { r.hoerproben++; }) */
+export function rolleAktualisieren(rolle, fn) {
+  return tx("rollen", "readwrite", (t) => {
+    const rs = t.objectStore("rollen");
+    rs.get(rolle).onsuccess = (e) => {
+      const r = e.target.result ?? leereRolle(rolle);
+      fn(r);
       rs.put(r);
     };
   });
@@ -148,7 +160,8 @@ export async function importieren(json, nurRolle = null) {
         const badges = { ...(meta?.badges ?? {}), ...alt.badges };
         const quiz = [...(alt.quiz ?? []), ...(meta?.quiz ?? []).filter((q) => !(alt.quiz ?? []).some((a) => a.zeit === q.zeit))];
         const zuletzt = (meta?.zuletzt?.zeit ?? 0) > (alt.zuletzt?.zeit ?? 0) ? meta.zuletzt : alt.zuletzt;
-        rs.put({ ...alt, rolle, tage, badges, quiz, zuletzt });
+        const hoerproben = Math.max(alt.hoerproben ?? 0, meta?.hoerproben ?? 0);
+        rs.put({ ...alt, rolle, tage, badges, quiz, zuletzt, hoerproben });
       };
     }
   });

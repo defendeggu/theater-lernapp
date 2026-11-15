@@ -26,6 +26,7 @@ test("Rolle Mona: Karten, Stichworte, Sammelreplik", () => {
   // weitere Karte: kein Kopf, Stichwort von Ruedi, letzter Satz fett
   assert.equal(k[1].kopf, null);
   assert.equal(k[1].stichwort.sprecher, "Ruedi");
+  assert.deepEqual(k[1].stichwort.sprecherIds, ["ruedi"]);
   assert.equal(k[1].stichwort.text, "Und du chunsch vo wiit her, gäll?");   // nur letzter Satz
   assert.equal(k[1].stichwort.ganz, "Ech be de Müller. Und du chunsch vo wiit her, gäll?");
   // zweimal hintereinander: eigene Zeile ist Stichwort

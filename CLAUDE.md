@@ -38,6 +38,10 @@ GitHub Pages ist öffentlich. Das Stück ist unveröffentlicht.
   immer mit Text, normales Hochdeutsch (kein Slang).
 - Lernziel ist das Textfest (Standard 1.12.2027), nicht die Premiere (30.4.2028): Phasen in
   `public/js/leitner.js`.
+- Sprachausgabe: reine Zuteilungslogik in `voices.js` (testbar), Browser-Anbindung in `speech.js`.
+  Regie wird nie vorgelesen. Router stoppt jede Ausgabe beim Seitenwechsel.
+- Browser-Tests: headless Chrome mit Demo-Daten (`test/fixtures/demo.mjs`, Passwort frei wählbar)
+  und einer Attrappe für `speechSynthesis`. Nie die echten Daten mit eigenem Passwort neu verschlüsseln.
 
 ## Ordnerstruktur
 

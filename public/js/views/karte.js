@@ -7,6 +7,8 @@ import {
   bewerten, zustand, faelligeKarten, schwacheKarten, bereichFilter, mischen, tagKey, phase,
 } from "../leitner.js";
 import { bewertungSpeichern, fortschrittFuer, lsGet, lsSet } from "../store.js";
+import { stimmenFuerStueck, sprich, stop, entsperren, verfuegbar } from "../speech.js";
+import { sprechPause } from "../voices.js";
 
 export const AMPEL = [
   { wert: "rot", text: "Nicht gewusst", hilfe: "Zurück in Fach 1, kommt bald wieder" },
@@ -77,6 +79,14 @@ export async function zeigeKarten(root, app, params) {
   const ergebnis = { rot: 0, gelb: 0, gruen: 0 };
   let hilfe = lsGet("hilfe", 0);
 
+  // Sprachausgabe: Stichwort vorlesen -> Pause zum Sprechen -> (optional) automatisch umdrehen
+  let audio = null;
+  if (verfuegbar()) stimmenFuerStueck(app.stueck).then((a) => { audio = a; }).catch(() => {});
+  let autoVorlesen = lsGet("autoVorlesen", false);
+  let interagiert = false; // iOS: erste Ausgabe erst nach einem Tippen
+  let ablauf = 0;          // Zähler: neue Karte/Drehen bricht laufenden Ablauf ab
+  let pauseTimer = null;
+
   let i = 0;
   if (modus === "chrono") {
     if (params.get("karte")) i = Math.max(0, queue.findIndex((k) => k.id === params.get("karte")));
@@ -130,6 +140,10 @@ export async function zeigeKarten(root, app, params) {
     const fach = z.neu ? h("span.fach.neu", "Neu") : h("span.fach", { title: "Fach in der Lernkartei" },
       z.geaendert ? "Text geändert" : `Fach ${z.fach}`);
 
+    const vorleseKnopf = verfuegbar() && h("button.vorlesen", {
+      "aria-label": "Stichwort vorlesen", title: "Stichwort vorlesen",
+      onclick(ev) { ev.stopPropagation(); interagiert = true; entsperren(); vorlesen(autoVorlesen); },
+    }, "▶︎");
     const stichwortZeile = k.stichwort
       ? h("p.stichwort",
           h("b.sprecher", k.stichwort.eigen ? (k.teil ? "Du (vorheriger Abschnitt): " : "Du (vorher): ") : `${k.stichwort.sprecher}: `),
@@ -140,7 +154,7 @@ export async function zeigeKarten(root, app, params) {
       h("div.band", h("span", `Akt ${k.akt} · Szene ${k.szene} · ${k.ort}`), teil),
       h("div.inhalt",
         k.kopf && h("p.szenenkopf", k.kopf),
-        stichwortZeile,
+        h("div.stichwort-reihe", stichwortZeile, vorleseKnopf),
         gemeinsam,
         hilfeText(k, hilfe),
         h("div.meta", fach,
@@ -158,7 +172,7 @@ export async function zeigeKarten(root, app, params) {
     const karte = h("div.karte", {
       class: "karte" + (gedreht ? " gedreht" : ""), role: "button", tabindex: "0",
       "aria-label": gedreht ? "Karte zeigt deinen Text. Tippen zum Zurückdrehen." : "Karte zeigt das Stichwort. Tippen zum Umdrehen.",
-      onclick(ev) { if (!ev.target.closest(".hilfe-wahl")) drehen(); },
+      onclick(ev) { if (!ev.target.closest(".hilfe-wahl, .vorlesen")) { interagiert = true; entsperren(); drehen(); } },
     }, vorne, hinten);
 
     const buehne = h("div.buehne", karte);
@@ -176,18 +190,27 @@ export async function zeigeKarten(root, app, params) {
       ? h("footer.aktionen.ampel",
           h("div.ampel-reihe", AMPEL.map((a, n) => h("button", {
             class: `knopf ampel-knopf ${a.wert}`, "data-wert": a.wert, title: `${a.hilfe} (Taste ${n + 1})`,
-            onclick(ev) { ev.stopPropagation(); bewerte(a.wert); },
+            onclick(ev) { ev.stopPropagation(); interagiert = true; entsperren(); bewerte(a.wert); },
           }, h("span.punkt", { "aria-hidden": "true" }, "●"), h("span", a.text)))),
           h("button.link", { onclick: drehen }, "↺ Vorderseite nochmals ansehen"))
       : h("footer.aktionen",
           h("button.knopf.rund", { onclick: () => gehe(-1), disabled: i === 0, "aria-label": "Vorherige Karte" }, "‹"),
-          h("button.knopf.primaer.gross.umdrehen", { onclick: drehen }, "Umdrehen"),
+          h("button.knopf.primaer.gross.umdrehen", { onclick() { interagiert = true; entsperren(); drehen(); } }, "Umdrehen"),
           h("button.knopf.rund", { onclick: () => gehe(1), "aria-label": "Nächste Karte" }, "›"));
 
     leeren(seite).append(
       h("header.kartenkopf",
         h("a.zurueck", { href: "#/", "aria-label": "Zur Übersicht" }, "‹"),
         h("div.titel", h("b", MODI[modus].name), h("span", `Akt ${k.akt} · Szene ${k.szene} · ${ph.name}`)),
+        verfuegbar() && h("button.auto-knopf", {
+          class: "auto-knopf" + (autoVorlesen ? " an" : ""), "aria-pressed": autoVorlesen ? "true" : "false",
+          title: "Stichworte automatisch vorlesen",
+          onclick() {
+            autoVorlesen = !autoVorlesen; lsSet("autoVorlesen", autoVorlesen); interagiert = true; entsperren();
+            if (autoVorlesen && !gedreht) vorlesen(true); else abbrechen();
+            zeichnenKopf();
+          },
+        }, autoVorlesen ? "🔊 Auto" : "🔈 Auto"),
         h("span.zaehler", `${i + 1} / ${queue.length}`)),
       h("div.fortschritt", { role: "progressbar", "aria-valuemin": "0", "aria-valuemax": queue.length, "aria-valuenow": i + 1 },
         h("span", { style: { width: `${((i + 1) / queue.length) * 100}%` } })),
@@ -195,7 +218,46 @@ export async function zeigeKarten(root, app, params) {
       buehne, aktionen);
   }
 
+  function zeichnenKopf() {
+    const b = seite.querySelector(".auto-knopf");
+    if (!b) return;
+    b.classList.toggle("an", autoVorlesen);
+    b.setAttribute("aria-pressed", autoVorlesen ? "true" : "false");
+    b.textContent = autoVorlesen ? "🔊 Auto" : "🔈 Auto";
+  }
+
+  function abbrechen() {
+    ablauf++;
+    clearTimeout(pauseTimer);
+    stop();
+    seite.querySelector(".sprech-pause")?.remove();
+  }
+
+  async function vorlesen(auto = false) {
+    if (!verfuegbar() || i >= queue.length || gedreht) return;
+    abbrechen();
+    const meinAblauf = ablauf;
+    const k = queue[i];
+    if (!audio) audio = await stimmenFuerStueck(app.stueck).catch(() => null);
+    const sw = k.stichwort;
+    const text = sw ? (lsGet("vorlesen", "satz") === "ganz" ? sw.ganz : sw.text) : (k.kopf ?? `Szene ${k.szene}`);
+    const stimme = audio?.zuteilung.get(sw?.sprecherIds?.[0]) ?? {};
+    seite.querySelector(".vorlesen")?.classList.add("laeuft");
+    const fertig = await sprich(text, stimme);
+    seite.querySelector(".vorlesen")?.classList.remove("laeuft");
+    if (!auto || !fertig || meinAblauf !== ablauf || gedreht) return;
+    // Pause zum Sprechen, Länge nach eigener Replik
+    const ms = sprechPause(k.text, lsGet("pauseFaktor", 1));
+    const balken = h("div.sprech-pause", { role: "status" },
+      h("span", "Dein Einsatz …"), h("i", { style: { animationDuration: `${ms}ms` } }));
+    seite.querySelector(".kartenseite.vorne .inhalt")?.append(balken);
+    if (lsGet("pauseModus", "auto") === "auto") {
+      pauseTimer = setTimeout(() => { if (meinAblauf === ablauf && !gedreht) drehen(); }, ms);
+    }
+  }
+
   function drehen() {
+    abbrechen();
     gedreht = !gedreht;
     const karte = seite.querySelector(".karte");
     if (karte && !reducedMotion) {
@@ -210,9 +272,11 @@ export async function zeigeKarten(root, app, params) {
   function gehe(d) {
     const neu = Math.min(Math.max(i + d, 0), queue.length);
     if (neu === i) return;
+    abbrechen();
     i = neu;
     gedreht = false;
     zeichnen(d);
+    if (autoVorlesen && interagiert) setTimeout(() => vorlesen(true), reducedMotion ? 0 : 300);
   }
 
   async function bewerte(wert) {
@@ -252,6 +316,7 @@ export async function zeigeKarten(root, app, params) {
     }
     else if (e.key === "ArrowRight") gehe(1);
     else if (e.key === "ArrowLeft") gehe(-1);
+    else if (e.key === "v" && !gedreht) { interagiert = true; vorlesen(autoVorlesen); }
     else if (gedreht && ["1", "2", "3"].includes(e.key)) bewerte(AMPEL[Number(e.key) - 1].wert);
   };
   document.addEventListener("keydown", taste);

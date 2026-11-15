@@ -11,6 +11,9 @@ import { zeigeEinstellungen } from "./views/einstellungen.js";
 import { zeigeZufall } from "./views/zufall.js";
 import { zeigeStatistik } from "./views/statistik.js";
 import { STANDARD_TERMINE } from "./leitner.js";
+import { stop as sprachausgabeStop, wachHalten } from "./speech.js";
+import { zeigeHoerprobe } from "./views/hoerprobe.js";
+import { zeigeStimmen } from "./views/stimmen.js";
 
 const DATEN_URL = "data/stueck.enc";
 const SCHLUESSEL = "schluessel";
@@ -106,6 +109,8 @@ function route() {
   const [pfad, query] = location.hash.replace(/^#/, "").split("?");
   const params = new URLSearchParams(query ?? "");
   window.scrollTo(0, 0);
+  sprachausgabeStop();   // Seitenwechsel beendet jede Sprachausgabe
+  wachHalten(false);
   if (!app.rolle && pfad !== "/rolle") return app.gehe("#/rolle");
   switch (pfad) {
     case "/rolle": return zeigeRollenwahl(root, app);
@@ -113,6 +118,8 @@ function route() {
     case "/einstellungen": return zeigeEinstellungen(root, app);
     case "/zufall": return zeigeZufall(root, app);
     case "/statistik": return zeigeStatistik(root, app);
+    case "/hoerprobe": return zeigeHoerprobe(root, app, params);
+    case "/stimmen": return zeigeStimmen(root, app);
     default: return zeigeStart(root, app);
   }
 }

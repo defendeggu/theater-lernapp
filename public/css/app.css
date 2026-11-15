@@ -38,6 +38,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--bg); color: var(--text);
@@ -286,3 +287,55 @@ button { font: inherit; color: inherit; }
 .meldung.ok:empty { display: none; }
 .meldung.ok:not(:empty) { padding: 10px 12px; border-radius: 12px; background: var(--flaeche); border: 1px solid var(--linie); margin: 8px 0; }
 .meldung.fehler { color: var(--rot); }
+
+/* --- M3: Vorlesen auf der Karte --- */
+.stichwort-reihe { display: flex; align-items: flex-start; gap: 10px; }
+.stichwort-reihe .stichwort { flex: 1; }
+.vorlesen {
+  flex: none; width: 44px; height: 44px; border-radius: 22px; border: 0; cursor: pointer;
+  background: var(--akt); color: var(--akt-text); font-size: 1em; margin-top: 2px;
+}
+.vorlesen.laeuft { animation: pulsieren 1s ease-in-out infinite; }
+@keyframes pulsieren { 50% { transform: scale(1.12); } }
+.auto-knopf {
+  border: 1px solid var(--linie); background: var(--flaeche); border-radius: 99px; padding: 6px 10px;
+  font-size: .8em; font-weight: 600; cursor: pointer; color: var(--text-2); white-space: nowrap; min-height: 36px;
+}
+.auto-knopf.an { background: var(--akt); color: var(--akt-text); border-color: transparent; }
+.sprech-pause { margin-top: 12px; font-size: .85em; color: var(--text-2); }
+.sprech-pause i { display: block; height: 6px; border-radius: 3px; background: var(--akt); margin-top: 6px; transform-origin: left; animation: pause-lauf linear forwards; }
+@keyframes pause-lauf { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+/* --- M3: Hörprobe --- */
+.hoerprobe-seite { padding: calc(env(safe-area-inset-top, 0px) + 8px) max(16px, env(safe-area-inset-right)) calc(var(--unten) + 110px) max(16px, env(safe-area-inset-left)); }
+.hoer-band { border-radius: 12px; margin: 10px 0; }
+.skript { list-style: none; padding: 0; margin: 12px 0; display: grid; gap: 6px; }
+.zeile { padding: 10px 12px; border-radius: 12px; background: var(--flaeche); border: 1px solid var(--linie); cursor: pointer; display: grid; gap: 2px; transition: opacity .2s; }
+.zeile .wer { font-size: .8em; color: var(--text-2); }
+.zeile.eigen { border-left: 5px solid var(--akt); }
+.zeile.eigen .was { color: var(--text-2); font-style: italic; }
+.zeile.eigen.gezeigt .was { color: var(--text); font-style: normal; font-weight: 600; }
+.zeile.aktuell { outline: 2px solid var(--akt); background: var(--flaeche-2); }
+.zeile.vorbei { opacity: .6; }
+.status { min-height: 1.4em; margin: 4px 0; font-weight: 600; }
+.status:empty { display: none; }
+.hoer-aktionen .play, .hoer-aktionen .weiter-knopf { flex: 1; max-width: 420px; }
+.fertig-hinweis { text-align: center; color: var(--akt3); font-weight: 700; }
+.klein-segmente span { padding: 8px 12px; font-size: .9em; }
+.szene-chip.fremd { opacity: .6; border-top-style: dashed; }
+.schalter { display: flex; gap: 10px; align-items: center; margin: 12px 0; }
+.schalter input { width: 22px; height: 22px; }
+
+/* --- M3: Stimmen --- */
+.hinweis-box { padding: 12px 14px; border-radius: 12px; background: var(--flaeche); border: 2px solid var(--gelb); font-size: .9em; }
+.regler { display: grid; gap: 6px; margin: 12px 0; }
+.regler input, .figur-wahl input[type=range] { width: 100%; accent-color: var(--akt2); }
+.figur-stimmen, .unbekannte { list-style: none; padding: 0; display: grid; gap: 10px; }
+.figur-stimmen li, .unbekannte li { padding: 10px 12px; border-radius: 12px; background: var(--flaeche); border: 1px solid var(--linie); }
+.figur-stimmen p { margin: 2px 0 6px; }
+.figur-kopf { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.knopf.rund.klein-rund { width: 44px; min-width: 44px; height: 44px; font-size: 1em; }
+.figur-wahl { display: grid; gap: 6px; }
+.figur-wahl select { font: inherit; font-size: max(16px, .9em); padding: 8px; border-radius: 10px; border: 1px solid var(--linie); background: var(--bg); color: var(--text); width: 100%; }
+.unbekannte li { display: grid; gap: 6px; }
+.kacheln .kachel:last-child:nth-child(odd) { grid-column: span 2; }

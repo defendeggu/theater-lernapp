@@ -254,10 +254,10 @@ Dazu: kleine Animation (Funken in Aktfarbe) beim neuen Badge, Tages-Serie und Fo
 
 | # | Inhalt | Ergebnis zum Testen |
 |---|---|---|
-| **M0** | Repo `theater-lernapp`, `.gitignore`, Parser mit Figurenliste und Sammelsprechern, Korrekturdatei, Review-Bericht, Kurzfassungen `ablauf.json`, Verschlüsselung | `review.html` lokal: alle 27 Szenen, Repliken pro Figur gezählt und mit den Textbuch-Angaben verglichen, Auffälligkeiten markiert. **Kontrolle durch Alina-Darstellerin.** |
-| **M1** | App-Gerüst, Passwort/Entschlüsselung, **Rollenwahl**, Karten chronologisch, Aktfarben, Aufdecken | Erste Version auf GitHub Pages, auf dem iPhone öffnen, verschiedene Rollen ausprobieren |
-| **M2** | Leitner mit Phasen, Bewertung, Zufall/Fällig/Schwach, Hilfestufen, Fortschritt pro Rolle, Export/Import | Täglich lernen möglich |
-| **M3** | Sprachausgabe mit Frauen-/Männerstimmen, Stimmen-Einstellungen, Hörprobe | Stichworte hören, Stimmen pro Figur |
+| **M0** ✅ | Repo `theater-lernapp`, `.gitignore`, Parser mit Figurenliste und Sammelsprechern, Korrekturdatei, Review-Bericht, Kurzfassungen `ablauf.json`, Verschlüsselung | `review.html` lokal: alle 27 Szenen, Repliken pro Figur gezählt und mit den Textbuch-Angaben verglichen, Auffälligkeiten markiert. **Kontrolle durch Alina-Darstellerin.** |
+| **M1** ✅ | App-Gerüst, Passwort/Entschlüsselung, **Rollenwahl**, Karten chronologisch, Aktfarben, Aufdecken | Erste Version auf GitHub Pages, auf dem iPhone öffnen, verschiedene Rollen ausprobieren |
+| **M2** ✅ | Leitner mit Phasen, Bewertung, Zufall/Fällig/Schwach, Hilfestufen, Fortschritt pro Rolle, Export/Import | Täglich lernen möglich |
+| **M3** ✅ | Sprachausgabe mit Frauen-/Männerstimmen, Stimmen-Einstellungen, Hörprobe | Stichworte hören, Stimmen pro Figur |
 | **M4** | Ablauf-Ansicht, «Mein Weg», Quiz | Ablauf lernen |
 | **M5** | Badges, Startbildschirm, PWA/offline, Countdown Textfest/Premiere, Feinschliff | Fertige App fürs Ensemble |
 | *M6 (später)* | *Echte Sprachaufnahmen* | *siehe unten* |

@@ -94,6 +94,11 @@ export function zeigeEinstellungen(root, app) {
         String(lsGet("neuProTag", 20)), (v) => lsSet("neuProTag", Number(v)))),
 
     h("section.block",
+      h("h2", "Stimmen und Vorlesen"),
+      h("p.klein", "Welche Figur mit welcher Stimme spricht, Sprechtempo, automatisches Vorlesen."),
+      h("a.knopf", { href: "#/stimmen" }, "Stimmen einstellen")),
+
+    h("section.block",
       h("h2", "Darstellung"),
       auswahl("schrift", "Schriftgrösse", [["klein", "Klein"], ["normal", "Normal"], ["gross", "Gross"], ["riesig", "Sehr gross"]],
         lsGet("schrift", "normal"), (v) => { lsSet("schrift", v); app.schrift(); }),
