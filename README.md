@@ -219,6 +219,10 @@ zuerst aus dem Netz. Für den Changelog ist ein PATCH trotzdem sinnvoll.
 
 ### Passwort wechseln
 
+`encrypt.mjs` prüft, ob das eingegebene Passwort die bisherige `stueck.enc` öffnet. Wenn nicht
+(Tippfehler oder bewusster Wechsel), fragt es nach («Passwort wirklich wechseln? ja/nein») und
+schreibt bei «nein» nichts.
+
 `node tools/encrypt.mjs` mit dem neuen Passwort ausführen, committen, pushen. Beim nächsten
 Öffnen fragt die App alle nach dem neuen Passwort; der Lernstand bleibt erhalten.
 

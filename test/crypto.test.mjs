@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import {
   encrypt, decryptWithPassword, decryptWithKey, deriveKey, parseHeader, WrongKeyError, ITERATIONS,
 } from "../public/js/crypto.js";
-import { buildPayload } from "../tools/encrypt.mjs";
+import { buildPayload, passwortPruefen } from "../tools/encrypt.mjs";
 
 const FAST = { iterations: 1000 }; // Tests schnell halten; App/Werkzeug nutzen 600000
 
@@ -87,4 +87,13 @@ test("buildPayload: nur Sprechrollen, keine Review-Felder, Kurzfassung eingefüg
   // und lässt sich verschlüsseln + entschlüsseln
   const bytes = await encrypt(p, "pw", FAST);
   assert.deepEqual((await decryptWithPassword(bytes, "pw")).data, p);
+});
+
+test("Passwort-Prüfung gegen die bisherige Datei (Schutz vor Tippfehlern)", async () => {
+  const bisher = await encrypt(beispiel, "ensemble-pw", FAST);
+  assert.equal(await passwortPruefen(bisher, "ensemble-pw"), "gleich");
+  assert.equal(await passwortPruefen(bisher, "ensemble-pv"), "anders");
+  assert.equal(await passwortPruefen(null, "egal"), "keine-datei");
+  assert.equal(await passwortPruefen(new Uint8Array(0), "egal"), "keine-datei");
+  assert.equal(await passwortPruefen(new Uint8Array(100), "egal"), "unlesbar");
 });

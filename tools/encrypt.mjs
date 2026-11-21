@@ -8,7 +8,27 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { encrypt, decryptWithPassword } from "../public/js/crypto.js";
+import { encrypt, decryptWithPassword, WrongKeyError } from "../public/js/crypto.js";
+
+/**
+ * Öffnet das Passwort die bisherige Datei?
+ * @returns {"gleich"|"anders"|"keine-datei"|"unlesbar"}
+ */
+export async function passwortPruefen(bisherigeBytes, passwort) {
+  if (!bisherigeBytes || !bisherigeBytes.length) return "keine-datei";
+  try {
+    await decryptWithPassword(bisherigeBytes, passwort);
+    return "gleich";
+  } catch (e) {
+    return e instanceof WrongKeyError ? "anders" : "unlesbar";
+  }
+}
+
+async function frage(text) {
+  const { createInterface } = await import("node:readline/promises");
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  try { return (await rl.question(text)).trim().toLowerCase(); } finally { rl.close(); }
+}
 
 /** Baut die Nutzdaten für die App: nur was die App braucht, ohne Review-Felder. */
 export function buildPayload(stueck, ablauf, stand = new Date().toISOString()) {
@@ -72,6 +92,25 @@ async function main() {
   if (pw1.length < 8) throw new Error("Passwort zu kurz (mind. 8 Zeichen).");
   const pw2 = await askHidden("Nochmals: ");
   if (pw1 !== pw2) throw new Error("Passwörter stimmen nicht überein.");
+
+  // Schutz vor Tippfehlern: öffnet das Passwort die bisherige Datei?
+  const bisher = await readFile(outP).catch(() => null);
+  const pruefung = await passwortPruefen(bisher, pw1);
+  if (pruefung === "gleich") {
+    console.log("Passwort passt zur bisherigen Datei – das Ensemble muss nichts neu eingeben.");
+  } else if (pruefung !== "keine-datei") {
+    console.warn(pruefung === "anders"
+      ? "\nACHTUNG: Dieses Passwort öffnet die bisherige stueck.enc NICHT.\n"
+        + "Entweder ein Tippfehler – oder du willst das Ensemble-Passwort wechseln.\n"
+        + "Bei einem Wechsel muss das ganze Ensemble das neue Passwort eingeben."
+      : "\nACHTUNG: Die bisherige stueck.enc lässt sich nicht lesen (anderes Format?).");
+    const antwort = await frage("Passwort wirklich wechseln? (ja/nein): ");
+    if (antwort !== "ja" && antwort !== "j") {
+      console.log("Abgebrochen – nichts geschrieben.");
+      return;
+    }
+    console.log("Passwort wird gewechselt.");
+  }
 
   const payload = buildPayload(stueck, ablauf);
   const bytes = await encrypt(payload, pw1);
