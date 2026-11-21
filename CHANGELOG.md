@@ -6,6 +6,11 @@ gilt 0.x; **1.0.0** ist die erste Version für alle (nach M5).
 - **MINOR** (0.x.0): neuer Meilenstein oder neue Funktion
 - **PATCH** (0.x.y): Fehlerbehebung, neue Textdaten (`stueck.enc`), kleine Anpassungen
 
+## [0.6.2] – 2026-11-21
+
+- Behoben: Die Textdaten von 0.6.1 waren mit einem falschen Passwort verschlüsselt und liessen
+  sich mit dem Ensemble-Passwort nicht öffnen. Jetzt wieder mit dem Ensemble-Passwort.
+
 ## [0.6.1] – 2026-11-21
 
 - Neue Textbuch-Fassung vom 14.11.2026 eingelesen (Text unverändert, nur Layout)
