@@ -1,7 +1,7 @@
 // Service Worker: App läuft offline (App-Shell + verschlüsseltes Stück im Cache).
 // VERSION muss mit public/js/version.js übereinstimmen (Test prüft das). Jede neue Version
 // ändert diese Datei -> Browser installiert den neuen Worker -> App zeigt "Neue Version".
-const VERSION = "0.6.0";
+const VERSION = "0.6.1";
 const CACHE = `tl-${VERSION}`;
 
 // Alle Dateien der App (Test prüft, dass keine fehlt und alle existieren)

@@ -248,3 +248,21 @@ def test_fette_zeile_ist_regie_nicht_text():
     sz = szene(st, "1.1")
     assert sz["repliken"][0]["text"] == "Gnueg für hüt."
     assert sz["regie"][-1]["text"] == "DUNKEL"
+
+
+def test_kursiv_gesetzter_sprechtext_bleibt_text():
+    # Ganze Replik kursiv (ohne Klammern) -> Sprechtext, markiert; Klammern bleiben Regie
+    s = Seite(10).titel("Akt 1", 20.0).titel("Szene 1.1", 16.0) \
+        .zentriert("Ruedi, Mona").zentriert("Mühle", bold=True) \
+        .replik(1, "Ruedi", Span("(steht auf) Chumm, mer gönd hei.", italic=True)) \
+        .replik(2, "Mona", Span("(nickt)", italic=True)) \
+        .replik(3, "Ruedi", "Guet.", gap=14.5) \
+        .folge(Span("Kurzes Dunkel.", italic=True))
+    sz = szene(parse.parse_lines(figurenseite() + s.lines), "1.1")
+    r1, r2, r3 = sz["repliken"]
+    assert r1["text"] == "Chumm, mer gönd hei."
+    assert r1["regie"][0]["text"] == "steht auf"
+    assert any("kursiv" in u for u in r1["unsicher"])
+    assert r2["text"] == ""                    # nur Regie in Klammern bleibt leer
+    assert r3["text"] == "Guet."               # kursive Regie nach Text bleibt Regie
+    assert r3["regie"][-1]["text"] == "Kurzes Dunkel."

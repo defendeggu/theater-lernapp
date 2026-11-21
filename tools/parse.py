@@ -418,9 +418,17 @@ class Parser:
         repliken = []
         for i, r in enumerate(sz.pop("_roh"), start=1):
             text, regie = split_regie(r["_spans"])
+            kursiv_text = False
+            if not text:
+                # Ganze Replik kursiv gesetzt: kursiver Text ausserhalb von Klammern ist Sprechtext
+                text2, regie2 = split_regie(r["_spans"], kursiv_ist_regie=False)
+                if text2:
+                    text, regie, kursiv_text = text2, regie2, True
             rep = {"id": f"{sz['id']}-{i:03d}", "seite": r["seite"], "seite_nr": r["seite_nr"],
                    "sprecher": [], "sammel": None, "text": text, "regie": regie,
                    "hash": text_hash(text), "unsicher": []}
+            if kursiv_text:
+                rep["unsicher"].append("Text im Textbuch kursiv – als Sprechtext übernommen")
             self.resolve_sprecher(rep, r["label"], sz, repliken)
             words = len(text.split())
             if not text:
@@ -521,16 +529,18 @@ def norm_par(s: str) -> str:
     return "\n\n".join(p for p in paras if p)
 
 
-def split_regie(spans: list[Span]) -> tuple[str, list[dict]]:
+def split_regie(spans: list[Span], kursiv_ist_regie: bool = True) -> tuple[str, list[dict]]:
     """Trennt Regie (kursiv, in Klammern, *N-Marken) vom Sprechtext.
 
     Gibt den Sprechtext (Absätze mit \\n\\n) und eine Liste
     [{"pos": Zeichenposition im Text, "text": "..."}] zurück.
+    Mit kursiv_ist_regie=False zählen nur Klammern und *N-Marken als Regie
+    (für Repliken, deren gesprochener Text im Textbuch kursiv gesetzt ist).
     """
     # 1. Rohtext mit Markierung kursiver Zeichen
     chars: list[tuple[str, bool]] = []
     for s in spans:
-        chars.extend((c, s.italic) for c in s.text)
+        chars.extend((c, s.italic and kursiv_ist_regie) for c in s.text)
     raw = "".join(c for c, _ in chars)
     regie_mask = [it for _, it in chars]
     # Einzelne kursive Buchstaben, die an einem normalen Wort kleben ("J" + "etzt"),

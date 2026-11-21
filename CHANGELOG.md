@@ -6,6 +6,12 @@ gilt 0.x; **1.0.0** ist die erste Version für alle (nach M5).
 - **MINOR** (0.x.0): neuer Meilenstein oder neue Funktion
 - **PATCH** (0.x.y): Fehlerbehebung, neue Textdaten (`stueck.enc`), kleine Anpassungen
 
+## [0.6.1] – 2026-11-21
+
+- Neue Textbuch-Fassung vom 14.11.2026 eingelesen (Text unverändert, nur Layout)
+- Behoben: Im Textbuch kursiv gesetzte Sprechtexte wurden als Regie erkannt – 6 Repliken
+  hatten keine Karte (Joe +2, Alina +2, Jakob +1, Bianca +1). Der übrige Lernstand bleibt erhalten.
+
 ## [0.6.0] – 2026-11-15 · M5
 
 - Badges: 16 Auszeichnungen (Vorhang auf, Szene sitzt, Akt 1–3 sitzt, Textfest, Serien,
